@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V2.3 for 0.1.0 and above
+-- + V2.4 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 
@@ -210,15 +210,11 @@ local function wait(ticks,next)
 end
 
 events.TICK:register(function()
-    local toRemove={}
-    for key,timer in ipairs(timers) do
+    for key,timer in pairs(timers) do
         if world.getTime() >= timer.t then
             timer.n()
-            table.insert(toRemove, key)
+            timers[key] = nil
         end
-    end
-    for i, key in ipairs(toRemove) do
-        table.remove(timers, key-(i-1))
     end
 end)
 --
