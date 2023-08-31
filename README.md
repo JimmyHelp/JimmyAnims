@@ -7,19 +7,25 @@ HOW TO USE: (THIS CODE DOES NOT RUN, DO NOT EDIT THIS AND EXPECT RESULTS, MOVE I
 
 In a DIFFERENT script put this code:
 
+```lua
 local anims = require("JimmyAnims")
+
 anims(animations.BBMODEL_NAME_HERE)
+```
 
 Where you need to replace BBMODEL_NAME_HERE with the name of the bbmodel that contains the animations. If you wish to use multiple bbmodels add more as arguments.
 
 If JimmyAnims is in a subfolder, the name of the subfolder is added to the script name like this:
 
+```lua
 local anims = require("subfolder.JimmyAnims")
 
 Example of multiple bbmodels:
 
 local anims = require("JimmyAnims")
+
 anims(animations.BBMODEL_NAME_HERE,animations.EXAMPLE)
+```
 
 If you make a typo with one of the bbmodel names when using multiple bbmodels the script won't be able to warn you. You're gonna have to spellcheck it.
 
@@ -27,13 +33,19 @@ If you make a typo with one of the bbmodel names when using multiple bbmodels th
 
 The script will automatically error if it detects an animation name with a period in it. You can dismiss this using
 
+```lua
 anims.dismiss = true
+```
 
 This goes directly after the require like this:
 
+```lua
 local anims = require("JimmyAnims")
+
 anims.dismiss = true
+
 anims(animations.BBMODEL_NAME_HERE)
+```
 
 ---------
 
@@ -41,14 +53,23 @@ This script is compatible with GSAnimBlend.
 It will automatically apply blendTime values to every animation, you can stop this or change the blend times using a couple functions.
 
 Example of changing GSAnimBlend compatbility:
+
+```lua
 local anims = require("JimmyAnims")
+
 anims.blendTime = 1.5
+
 anims.itemBlendTime = 1.5
+
 anims.autoBlend = true
+
 anims(animations.NAME_HERE)
+```
 
 blendTime is for the main bulk of animations
+
 itemBlendTime is for animations that deal with items and hands (like, eatingR or attackR)
+
 autoBlend can be set to false to turn off the automatic blending
 
 If you want to change individual animation values but don't want to disable autoBlend, you can change the blendTime value like normal underneath the require for JimmyAnims.
@@ -59,7 +80,9 @@ Note: These must be ABOVE where you set the bbmodel, like in the example. A diff
 
 LIST OF ANIMATIONS:
 REMEMBER: ALL ANIMATIONS ARE OPTIONAL. IF YOU DON'T WANT ONE, DON'T ADD IT, ANOTHER ANIMATION WILL PLAY IN ITS STEAD FOR ALL ANIMATIONS BUT IDLE, WALK, AND CROUCH
+
 To access the list of animations run this line of code IN THE OTHER SCRIPT AND UNDERNEATH THE REQUIRE:
+
 (sadly Figura scrambles the order of the list, you can also look below to see it in the script)
 
 logTable(animsList)
