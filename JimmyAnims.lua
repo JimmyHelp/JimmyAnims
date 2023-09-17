@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V2.4 for 0.1.0 and above
+-- + V2.5 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 
@@ -364,7 +364,7 @@ local function bodyAnims()
 
     -- canJump stuff
     local webbed = world.getBlockState(player:getPos()).id == "minecraft:cobweb"
-    local ladder = player:isClimbing() and not grounded
+    local ladder = player:isClimbing() and not grounded and not flying
 
     local canJump = not (inLiquid or webbed)
 
@@ -378,7 +378,7 @@ local function bodyAnims()
     local jumpingUp = hasJumped and goingUp and neverJump
     local jumpingDown = hasJumped and goingDown and not falling and neverJump
     local isJumping = jumpingUp or jumpingDown or falling
-    local sprinting = sprinty and standing and not inLiquid
+    local sprinting = sprinty and standing and not inLiquid and not sitting
     local walking = moving and not sprinting and not isJumping and not sitting
     local forward = walking and not backwards
     local backward = walking and backwards
