@@ -3,9 +3,7 @@ Off-Discord Location for Jimmy's (my) Animation Handler for Figura versions 0.1.
 
 # How to Use:
 
-HOW TO USE: (THIS CODE DOES NOT RUN, DO NOT EDIT THIS AND EXPECT RESULTS, MOVE IT TO A DIFFERENT SCRIPT AS THE INSTRUCTIONS SAY)
-
-In a DIFFERENT script put this code:
+In a DIFFERENT script put this code: (or use JimmyExample)
 
 local anims = require("JimmyAnims")
 anims(animations.BBMODEL_NAME_HERE)
