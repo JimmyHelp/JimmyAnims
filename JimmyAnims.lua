@@ -1,7 +1,8 @@
 -- + Made by Jimmy Hellp
--- + V2.5 for 0.1.0 and above
+-- + V3 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
+-- + Now with animation integration, as an alternative to using priority
 
 --[[---------- YOU ARE NOT SUPPOSED TO EDIT THIS SCRIPT. DO SO AT YOUR OWN RISK. DELETE THE ERRORS AT YOUR OWN RISK. THEY'RE THERE TO TROUBLESHOOT PROBLEMS NOT TO INCONVENIENCE YOU --------
 
@@ -25,9 +26,42 @@ anims(animations.BBMODEL_NAME_HERE,animations.EXAMPLE)
 
 If you make a typo with one of the bbmodel names when using multiple bbmodels the script won't be able to warn you. You're gonna have to spellcheck it.
 
+Example of all functions with their default values:
+
+local anims = require('JimmyAnims')
+anims.excluBlendTime = 4
+anims.incluBlendTime = 4
+anims.autoBlend = false
+anims.dismiss = false
+anims.addExcluAnims()
+anims.addIncluAnims()
+anims.addAllAnims()
+anims(animations.BBMODEL_NAME_HERE)
+
+There's an explanation on all of these below
+
+---------
+JimmyAnims has two "types" of animations: 'exclusive' animations and 'invlusive' animations.
+
+Exclusive animations: Cannot play at the same time, these are the type of player states like idle, walk, swim, elytra gliding, etc
+
+Inclusive animations: Can play at the same time alongside each other and exclusive animations, these are the types of animations like eatR (only exception is holdR\L which won't play while using items)
+
+--------
+
+Animation Integration:
+You can use the custom addExcluAnims, addIncluAnims, and addAllAnims functions to stop their associated animation types.
+
+Example usage:
+anims.addExcluAnims(animations.BBMODEL.example,animations.BBMODEL.second)
+
+This will make it so whenever any of the given animations are playing, all exclusive animations will be stopped. addIncluAnims stops inclusive animations, and addAllAnims stops every animation.
+
 ---------
 
-The script will automatically error if it detects an animation name with a period in it. You can dismiss this using
+The script will automatically error if it detects an animation name with a period in it (JimmyAnims doesn't accept animations with periods in them, so only use this if the animation isn't meant for the handler).
+
+You can dismiss this using
 
 anims.dismiss = true
 
@@ -44,16 +78,16 @@ It will automatically apply blendTime values to every animation, you can stop th
 
 Example of changing GSAnimBlend compatbility:
 local anims = require("JimmyAnims")
-anims.blendTime = 1.5
-anims.itemBlendTime = 1.5
+anims.excluBlendTime = 4
+anims.incluBlendTime = 4
 anims.autoBlend = true
 anims(animations.NAME_HERE)
 
-blendTime is for the main bulk of animations
-itemBlendTime is for animations that deal with items and hands (like, eatingR or attackR)
+excluBlendTime is for all the animations that can't play alongside each other
+incluBlendTime is for animations that deal with items and hands (like, eatR or attackR)- aka ones that can play alongside each other and exclusive animations
 autoBlend can be set to false to turn off the automatic blending
 
-If you want to change individual animation values but don't want to disable autoBlend, you can change the blendTime value like normal underneath the require for JimmyAnims.
+If you want to change individual animation values but don't want to disable autoBlend, you can change the blendTime value like normal underneath the final setup for JimmyAnims.
 
 Note: These must be ABOVE where you set the bbmodel, like in the example. A different order will mess it up.
 
@@ -64,11 +98,12 @@ REMEMBER: ALL ANIMATIONS ARE OPTIONAL. IF YOU DON'T WANT ONE, DON'T ADD IT, ANOT
 To access the list of animations run this line of code IN THE OTHER SCRIPT AND UNDERNEATH THE REQUIRE:
 (sadly Figura scrambles the order of the list, you can also look below to see it in the script)
 
-logTable(animsList)
+logTable(anims.animsList)
 
 Or you can look below at animsList. The stuff on the right is the animation name, the stuff on the left is an explanation of when the animation plays If you're confused about when animations will play, try them out.]]
 
 local animsList = {
+    -- Exclusive Animations
 idle="idling",
 walk="walking",
 walkback="walking backwards",
@@ -124,6 +159,8 @@ watercrouchup = "in water and crouching and going up. only possible in bubble co
 hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
 death = "dying",
 
+    -- Inclusive Animations:
+
 attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
 attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
 mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
@@ -131,16 +168,16 @@ mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
 useR = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the right hand",
 useL = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the left hand",
 
-eatingR = "eating from the right hand",
-eatingL = "eating from the left hand",
-drinkingR = "drinking from the right hand",
-drinkingL = "drinking from the left hand",
-blockingR = "blocking from the right hand",
-blockingL = "blocking from the left hand",
+eatR = "eating from the right hand",
+eatL = "eating from the left hand",
+drinkR = "drinking from the right hand",
+drinkL = "drinking from the left hand",
+blockR = "blocking from the right hand",
+blockL = "blocking from the left hand",
 bowR = "drawing back a bow from the right hand",
 bowL = "drawing back a bow from the left hand",
-loadingR = "loading a crossbow from the right hand",
-loadingL = "loading a crossbow from the left hand",
+loadR = "loading a crossbow from the right hand",
+loadL = "loading a crossbow from the left hand",
 crossbowR = "holding a loaded crossbow in the right hand",
 crossbowL = "holding a loaded crossbow in the left hand",
 spearR = "holding up a trident in the right hand",
@@ -163,7 +200,7 @@ assert(
 )
 
 
-local function errors(paths,x)
+local function errors(paths,dismiss)
     assert(
         next(paths),
         "§aCustom Script Warning: §4No blockbench models were found, or the blockbench model found contained no animations. \n" .." Check that there are no typos in the given bbmodel name, or that the bbmodel has animations by using this line of code at the top of your script: \n"
@@ -172,8 +209,7 @@ local function errors(paths,x)
 
     for _, path in pairs(paths) do
         for _, anim in pairs(path) do
-            if anim:getName():find("%.") and not x then
-                -- delete these three lines below to remove the error v
+            if anim:getName():find("%.") and not dismiss then
                 error(
                     "§aCustom Script Warning: §4The animation §b'"..anim:getName().."'§4 has a period ( . ) in its name, the handler can't use that animation and it must be renamed to fit the handler's accepted animation names. \n" ..
                 " If the animation isn't meant for the handler, you can dismiss this error by adding §fanims.dismiss = true§4 after the require but before setting the bbmodel.§c")
@@ -181,6 +217,17 @@ local function errors(paths,x)
         end
     end
 end
+
+local allAnims = {}
+local excluAnims = {}
+local incluAnims = {}
+local animsTable= {
+    allVar = false,
+    excluVar = false,
+    incluVar = false
+}
+local excluState
+local incluState
 
 local hasJumped = false
 
@@ -201,6 +248,8 @@ local reach = 4.5
 local jump
 local oldJump = jump
 local holdingJ = false
+
+local grounded
 
 -- wait code from Manuel
 local timers = {}
@@ -260,15 +309,15 @@ function pings.JimmyAnims_Attacking(x)
         leftMine = leftSwing and hitBlock and not targetEntity
         for _, path in pairs(bbmodels) do    
             if rightAttack or (rightMine and not path.mineR) then
-                if path.attackR then path.attackR:play() end
+                if path.attackR and incluState then path.attackR:play() end
             end
             if leftAttack or (leftMine and not path.mineL) then
-                if path.attackL then path.attackL:play() end
+                if path.attackL and incluState then path.attackL:play() end
             end
-            if path.mineR and rightMine then
+            if path.mineR and rightMine and incluState then
                 path.mineR:play()
             end
-            if path.mineL and leftMine then
+            if path.mineL and leftMine and incluState then
                 path.mineL:play()
             end
         end
@@ -281,10 +330,10 @@ function pings.JimmyAnims_Using(x)
     if not rightPress then return end
     wait(1,function()
     for _, path in pairs(bbmodels) do    
-        if path.useR and player:getSwingArm() == rightActive and not sleeping then
+        if path.useR and player:getSwingArm() == rightActive and not sleeping and incluState then
             path.useR:play()
         end
-        if path.useL and player:getSwingArm() == leftActive and not sleeping then
+        if path.useL and player:getSwingArm() == leftActive and not sleeping and incluState then
             path.useL:play()
         end
     end
@@ -302,6 +351,33 @@ use.release = function() pings.JimmyAnims_Using(false) end
 function events.entity_init()
     hp = player:getHealth() + player:getAbsorptionAmount()
     oldhp = hp
+end
+
+local function interruptions()
+    for _, value in ipairs(allAnims) do
+        if value:isPlaying() then
+            animsTable.allVar = true
+            break
+        else
+            animsTable.allVar = false
+        end
+    end
+    for _, value in ipairs(excluAnims) do
+        if value:isPlaying() then
+            animsTable.excluVar = true
+            break
+        else
+            animsTable.excluVar = false
+        end
+    end
+    for _, value in ipairs(incluAnims) do
+        if value:isPlaying() then
+            animsTable.incluVar = true
+            break
+        else
+            animsTable.incluVar = false
+        end
+    end
 end
 
 local function bodyAnims()
@@ -356,7 +432,7 @@ local function bodyAnims()
     local goingDown =  yvel < 0
     local falling = yvel < -.6
     local playerGround = world.getBlockState(player:getPos():add(0,-.1,0))
-    local grounded = playerGround:isSolidBlock() or player:isOnGround()
+    grounded = playerGround:isSolidBlock() or player:isOnGround()
     local pv = velocity:mul(1, 0, 1):normalize()
     local pl = models:partToWorldMatrix():applyDir(0,0,-1):mul(1, 0, 1):normalize()
     local fwd = pv:dot(pl)
@@ -382,6 +458,8 @@ local function bodyAnims()
     local walking = moving and not sprinting and not isJumping and not sitting
     local forward = walking and not backwards
     local backward = walking and backwards
+
+    excluState = not animsTable.allVar and not animsTable.excluVar
 
     -- anim states
     for _, path in pairs(bbmodels) do
@@ -441,8 +519,9 @@ local function bodyAnims()
     local walkbackState = backward and standing and not creativeFlying and not ladder and not inWater
     local walkState = forward and standing and not creativeFlying and not ladder and not inWater or (walkbackState and not path.walkback) or (sprintState and not path.sprint) or (climbState and not path.climb) 
     or (swimState and not path.swim) or (elytraState and not path.elytra) or (jumpupState and not path.jumpup) or (waterwalkState and (not path.waterwalk and not path.water)) or (flywalkState and not path.flywalk and not path.fly)
+    or (crouchwalkState and not path.crouch)
     local idleState = not moving and standing and not isJumping and not sitting and not creativeFlying and not ladder and not inWater or (sleepState and not path.sleep) or (vehicleState and not path.vehicle)
-    or ((waterState and not waterwalkState) and not path.water) or ((flyState and not flywalkState) and not path.fly)
+    or ((waterState and not waterwalkState) and not path.water) or ((flyState and not flywalkState) and not path.fly) or ((crouchState and not crouchwalkState) and not path.crouch)
 
     local deadState = hp <= 0
 
@@ -451,55 +530,57 @@ local function bodyAnims()
             path.hurt:restart()
         end
 
-        if path.idle then path.idle:playing(idleState) end
-        if path.walk then path.walk:playing(walkState) end
-        if path.walkback then path.walkback:playing(walkbackState) end
-        if path.sprint then path.sprint:playing(sprintState) end
-        if path.sprintjumpup then path.sprintjumpup:playing(sprintjumpupState) end
-        if path.sprintjumpdown then path.sprintjumpdown:playing(sprintjumpdownState) end
-        if path.crouch then path.crouch:playing(crouchState) end
-        if path.crouchwalk then path.crouchwalk:playing(crouchwalkState) end
-        if path.crouchwalkback then path.crouchwalkback:playing(crouchwalkbackState) end
-        if path.crouchjumpup then path.crouchjumpup:playing(crouchjumpupState) end
-        if path.crouchjumpdown then path.crouchjumpdown:playing(crouchjumpdownState) end
-        if path.jumpup then path.jumpup:playing(jumpupState) end
-        if path.jumpdown then path.jumpdown:playing(jumpdownState) end
-        if path.fall then path.fall:playing(fallState) end
-        if path.elytra then path.elytra:playing(elytraState) end
-        if path.elytradown then path.elytradown:playing(elytradownState) end
-        if path.trident then path.trident:playing(tridentState) end
-        if path.sleep then path.sleep:playing(sleepState) end
-        if path.swim then path.swim:playing(swimState) end
-        if path.vehicle then path.vehicle:playing(vehicleState) end
-        if path.crawl then path.crawl:playing(crawlState) end
-        if path.crawlstill then path.crawlstill:playing(crawlstillState) end
-        if path.fly then path.fly:playing(flyState) end
-        if path.flywalk then path.flywalk:playing(flywalkState) end
-        if path.flywalkback then path.flywalkback:playing(flywalkbackState) end
-        if path.flysprint then path.flysprint:playing(flysprintState) end
-        if path.flyup then path.flyup:playing(flyupState) end
-        if path.flydown then path.flydown:playing(flydownState) end
-        if path.climb then path.climb:playing(climbState) end
-        if path.climbstill then path.climbstill:playing(climbstillState) end
-        if path.climbdown then path.climbdown:playing(climbdownState) end
-        if path.climbcrouch then path.climbcrouch:playing(climbcrouchState) end
-        if path.climbcrouchwalk then path.climbcrouchwalk:playing(climbcrouchwalkState) end
-        if path.water then path.water:playing(waterState) end
-        if path.waterwalk then path.waterwalk:playing(waterwalkState) end
-        if path.waterwalkback then path.waterwalkback:playing(waterwalkbackState) end
-        if path.waterup then path.waterup:playing(waterupState) end
-        if path.waterdown then path.waterdown:playing(waterdownState) end
-        if path.watercrouch then path.watercrouch:playing(watercrouchState) end
-        if path.watercrouchwalk then path.watercrouchwalk:playing(watercrouchwalkState) end
-        if path.watercrouchwalkback then path.watercrouchwalkback:playing(watercrouchwalkbackState) end
-        if path.watercrouchdown then path.watercrouchdown:playing(watercrouchdownState) end
-        if path.watercrouchup then path.watercrouchup:playing(watercrouchupState) end
+        if path.idle then path.idle:playing(excluState and idleState) end
+        if path.walk then path.walk:playing(excluState and walkState) end
+        if path.walkback then path.walkback:playing(excluState and walkbackState) end
+        if path.sprint then path.sprint:playing(excluState and sprintState) end
+        if path.sprintjumpup then path.sprintjumpup:playing(excluState and sprintjumpupState) end
+        if path.sprintjumpdown then path.sprintjumpdown:playing(excluState and sprintjumpdownState) end
+        if path.crouch then path.crouch:playing(excluState and crouchState) end
+        if path.crouchwalk then path.crouchwalk:playing(excluState and crouchwalkState) end
+        if path.crouchwalkback then path.crouchwalkback:playing(excluState and crouchwalkbackState) end
+        if path.crouchjumpup then path.crouchjumpup:playing(excluState and crouchjumpupState) end
+        if path.crouchjumpdown then path.crouchjumpdown:playing(excluState and crouchjumpdownState) end
+        if path.jumpup then path.jumpup:playing(excluState and jumpupState) end
+        if path.jumpdown then path.jumpdown:playing(excluState and jumpdownState) end
+        if path.fall then path.fall:playing(excluState and fallState) end
+        if path.elytra then path.elytra:playing(excluState and elytraState) end
+        if path.elytradown then path.elytradown:playing(excluState and elytradownState) end
+        if path.trident then path.trident:playing(excluState and tridentState) end
+        if path.sleep then path.sleep:playing(excluState and sleepState) end
+        if path.swim then path.swim:playing(excluState and swimState) end
+        if path.vehicle then path.vehicle:playing(excluState and vehicleState) end
+        if path.crawl then path.crawl:playing(excluState and crawlState) end
+        if path.crawlstill then path.crawlstill:playing(excluState and crawlstillState) end
+        if path.fly then path.fly:playing(excluState and flyState) end
+        if path.flywalk then path.flywalk:playing(excluState and flywalkState) end
+        if path.flywalkback then path.flywalkback:playing(excluState and flywalkbackState) end
+        if path.flysprint then path.flysprint:playing(excluState and flysprintState) end
+        if path.flyup then path.flyup:playing(excluState and flyupState) end
+        if path.flydown then path.flydown:playing(excluState and flydownState) end
+        if path.climb then path.climb:playing(excluState and climbState) end
+        if path.climbstill then path.climbstill:playing(excluState and climbstillState) end
+        if path.climbdown then path.climbdown:playing(excluState and climbdownState) end
+        if path.climbcrouch then path.climbcrouch:playing(excluState and climbcrouchState) end
+        if path.climbcrouchwalk then path.climbcrouchwalk:playing(excluState and climbcrouchwalkState) end
+        if path.water then path.water:playing(excluState and waterState) end
+        if path.waterwalk then path.waterwalk:playing(excluState and waterwalkState) end
+        if path.waterwalkback then path.waterwalkback:playing(excluState and waterwalkbackState) end
+        if path.waterup then path.waterup:playing(excluState and waterupState) end
+        if path.waterdown then path.waterdown:playing(excluState and waterdownState) end
+        if path.watercrouch then path.watercrouch:playing(excluState and watercrouchState) end
+        if path.watercrouchwalk then path.watercrouchwalk:playing(excluState and watercrouchwalkState) end
+        if path.watercrouchwalkback then path.watercrouchwalkback:playing(excluState and watercrouchwalkbackState) end
+        if path.watercrouchdown then path.watercrouchdown:playing(excluState and watercrouchdownState) end
+        if path.watercrouchup then path.watercrouchup:playing(excluState and watercrouchupState) end
 
-        if path.death then path.death:playing(deadState) end
+        if path.death then path.death:playing(excluState and deadState) end
     end
 end
 
 local function handAnims()
+    incluState = not animsTable.allVar and not animsTable.incluVar
+
     -- we be holding items tho
     handedness = player:isLeftHanded()
     rightActive = handedness and "OFF_HAND" or "MAIN_HAND"
@@ -521,14 +602,14 @@ local function handAnims()
     local crossR = rightItem.tag and rightItem.tag["Charged"] == 1
     local crossL = leftItem.tag and leftItem.tag["Charged"] == 1
 
-    local drinkingRState = using and usingR == "DRINK"
-    local drinkingLState = using and usingL == "DRINK"
+    local drinkRState = using and usingR == "DRINK"
+    local drinkLState = using and usingL == "DRINK"
 
-    local eatingRState = (using and usingR == "EAT")
-    local eatingLState = (using and usingL == "EAT")
+    local eatRState = (using and usingR == "EAT")
+    local eatLState = (using and usingL == "EAT")
 
-    local blockingRState = using and usingR == "BLOCK"
-    local blockingLState = using and usingL == "BLOCK"
+    local blockRState = using and usingR == "BLOCK"
+    local blockLState = using and usingL == "BLOCK"
 
     local bowRState = using and usingR == "BOW"
     local bowLState = using and usingL == "BOW"
@@ -542,8 +623,8 @@ local function handAnims()
     local hornRState = using and usingR == "TOOT_HORN"
     local hornLState = using and usingL == "TOOT_HORN"
 
-    local loadingRState = using and usingR == "CROSSBOW"
-    local loadingLState = using and usingL == "CROSSBOW"
+    local loadRState = using and usingR == "CROSSBOW"
+    local loadLState = using and usingL == "CROSSBOW"
 
     local rightHoldState = rightItem.id ~= "minecraft:air" and not (using or crossR or crossL)
     local leftHoldState = leftItem.id ~= "minecraft:air" and not (using or crossL or crossR)
@@ -551,21 +632,21 @@ local function handAnims()
     local swingDuration = player:getSwingDuration()
 
     for _, path in pairs(bbmodels) do
-        if path.mineR and leftPress and rightMine then
+        if path.mineR and leftPress and rightMine and incluState then
             path.mineR:play()
-        elseif path.attackR and leftPress and rightMine then
+        elseif path.attackR and leftPress and rightMine and incluState then
             path.attackR:play()
         end
-        if path.mineL and leftPress and leftMine then
+        if path.mineL and leftPress and leftMine and incluState then
             path.mineL:play()
-        elseif path.attackL and leftPress and leftMine then
+        elseif path.attackL and leftPress and leftMine and incluState then
             path.attackL:play()
         end
         
-        if path.useR and rightPress and rightSwing then
+        if path.useR and rightPress and rightSwing and incluState then
             path.useR:play()
         end
-        if path.useL and rightPress and leftSwing then
+        if path.useL and rightPress and leftSwing and incluState then
             path.useL:play()
         end
 
@@ -576,32 +657,33 @@ local function handAnims()
         if path.mineR then path.mineR:speed((path.mineR:getLength()*20)/swingDuration) end
         if path.mineL then path.mineL:speed((path.mineL:getLength()*20)/swingDuration) end
 
-        if path.eatingR then path.eatingR:playing(eatingRState or (drinkingRState and not path.drinkingR)) end
-        if path.eatingL then path.eatingL:playing(eatingLState or (drinkingLState and not path.drinkingL)) end
-        if path.drinkingR then path.drinkingR:playing(drinkingRState) end
-        if path.drinkingL then path.drinkingL:playing(drinkingLState) end
-        if path.blockingR then path.blockingR:playing(blockingRState) end
-        if path.blockingL then path.blockingL:playing(blockingLState) end
-        if path.bowR then path.bowR:playing(bowRState) end
-        if path.bowL then path.bowL:playing(bowLState) end
-        if path.loadingR then path.loadingR:playing(loadingRState) end
-        if path.loadingL then path.loadingL:playing(loadingLState) end
-        if path.crossbowR then path.crossbowR:playing(crossR) end
-        if path.crossbowL then path.crossbowL:playing(crossL) end
-        if path.spearR then path.spearR:playing(spearRState) end
-        if path.spearL then path.spearL:playing(spearLState) end
-        if path.spyglassR then path.spyglassR:playing(spyglassRState) end
-        if path.spyglassL then path.spyglassL:playing(spyglassLState) end
-        if path.hornR then path.hornR:playing(hornRState) end
-        if path.hornL then path.hornL:playing(hornLState) end
-        if path.holdR then path.holdR:playing(rightHoldState) end
-        if path.holdL then path.holdL:playing(leftHoldState) end
+        if path.eatR then path.eatR:playing(incluState and eatRState or (drinkRState and not path.drinkR)) end
+        if path.eatL then path.eatL:playing(incluState and eatLState or (drinkLState and not path.drinkL)) end
+        if path.drinkR then path.drinkR:playing(incluState and drinkRState) end
+        if path.drinkL then path.drinkL:playing(incluState and drinkLState) end
+        if path.blockR then path.blockR:playing(incluState and blockRState) end
+        if path.blockL then path.blockL:playing(incluState and blockLState) end
+        if path.bowR then path.bowR:playing(incluState and bowRState) end
+        if path.bowL then path.bowL:playing(incluState and bowLState) end
+        if path.loadR then path.loadR:playing(incluState and loadRState) end
+        if path.loadL then path.loadL:playing(incluState and loadLState) end
+        if path.crossbowR then path.crossbowR:playing(incluState and crossR) end
+        if path.crossbowL then path.crossbowL:playing(incluState and crossL) end
+        if path.spearR then path.spearR:playing(incluState and spearRState) end
+        if path.spearL then path.spearL:playing(incluState and spearLState) end
+        if path.spyglassR then path.spyglassR:playing(incluState and spyglassRState) end
+        if path.spyglassL then path.spyglassL:playing(incluState and spyglassLState) end
+        if path.hornR then path.hornR:playing(incluState and hornRState) end
+        if path.hornL then path.hornL:playing(incluState and hornLState) end
+        if path.holdR then path.holdR:playing(incluState and rightHoldState) end
+        if path.holdL then path.holdL:playing(incluState and leftHoldState) end
     end
 end
 
 local function tick()
     bodyAnims()
     handAnims()
+    pcall(interruptions)
 end
 
 local GSAnimBlend
@@ -661,18 +743,18 @@ local function blend(paths, time, itemTime)
         if path.watercrouchdown then path.watercrouchdown:blendTime(time) end
         if path.watercrouchup then path.watercrouchup:blendTime(time) end
 
-        if path.eatingR then path.eatingR:blendTime(itemTime) end
-        if path.eatingL then path.eatingL:blendTime(itemTime) end
-        if path.drinkingR then path.drinkingR:blendTime(itemTime) end
-        if path.drinkingL then path.drinkingL:blendTime(itemTime) end
-        if path.blockingR then path.blockingR:blendTime(itemTime) end
-        if path.blockingL then path.blockingL:blendTime(itemTime) end
+        if path.eatR then path.eatR:blendTime(itemTime) end
+        if path.eatL then path.eatL:blendTime(itemTime) end
+        if path.drinkR then path.drinkR:blendTime(itemTime) end
+        if path.drinkL then path.drinkL:blendTime(itemTime) end
+        if path.blockR then path.blockR:blendTime(itemTime) end
+        if path.blockL then path.blockL:blendTime(itemTime) end
         if path.bowR then path.bowR:blendTime(itemTime) end
         if path.bowL then path.bowL:blendTime(itemTime) end
         if path.crossbowR then path.crossbowR:blendTime(itemTime) end
         if path.crossbowL then path.crossbowL:blendTime(itemTime) end
-        if path.loadingR then path.loadingR:blendTime(itemTime) end
-        if path.loadingL then path.loadingL:blendTime(itemTime) end
+        if path.loadR then path.loadR:blendTime(itemTime) end
+        if path.loadL then path.loadL:blendTime(itemTime) end
         if path.spearR then path.spearR:blendTime(itemTime) end
         if path.spearL then path.spearL:blendTime(itemTime) end
         if path.spyglassR then path.spyglassR:blendTime(itemTime) end
@@ -705,7 +787,7 @@ local animMT = {__call = function(self, ...)
 
     errors(paths,self.dismiss)
 
-    if should_blend then blend(paths, self.blendTime or 1.5, self.itemBlendTime or 1.5) end
+    if should_blend then blend(paths, self.excluBlendTime or 4, self.incluBlendTime or 4) end
 
     for _, v in ipairs(paths) do
         bbmodels[#bbmodels+1] = v
@@ -717,6 +799,32 @@ local animMT = {__call = function(self, ...)
     init = true
 end}
 
+local function addAllAnims(...)
+    for _, v in ipairs{...} do
+      allAnims[#allAnims+1] = v
+    end
+end
+
+local function addExcluAnims(...)
+    for _, v in ipairs{...} do
+      excluAnims[#excluAnims+1] = v
+    end
+end
+
+local function addIncluAnims(...)
+    for _, v in ipairs{...} do
+      incluAnims[#incluAnims+1] = v
+    end
+end
+
 -- If you're choosing to edit this script, don't put anything beneath the return line
 
-return setmetatable({animsList = animsList}, animMT)
+return setmetatable(
+    {
+        animsList = animsList,
+        addAllAnims = addAllAnims,
+        addExcluAnims = addExcluAnims,
+        addIncluAnims = addIncluAnims
+    },
+    animMT
+)
