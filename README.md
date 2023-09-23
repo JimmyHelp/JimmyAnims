@@ -100,90 +100,161 @@ logTable(anims.animsList)
 Or you can look below at animsList. The stuff on the right is the animation name, the stuff on the left is an explanation of when the animation plays If you're confused about when animations will play, try them out.]]
 
 local animsList = {
+
     -- Exclusive Animations
+    
 idle="idling",
+
 walk="walking",
+
 walkback="walking backwards",
+
 jumpup="jumping up caused via the jump key",
+
 jumpdown="jumping down after a jump up",
+
 fall="falling after a while",
 
+
 sprint = "sprinting",
+
 sprintjumpup="sprinting and jumping up caused via the jump key",
+
 sprintjumpdown="sprinting and jumping down after a jump up",
 
+
 crouch = "crouching",
+
 crouchwalk = "crouching and walking",
+
 crouchwalkback = "crouching and walking backwards",
+
 crouchjumpup = "crouching and jumping up caused via the jump key",
+
 crouchjumpdown = "crouching and jumping down after a jump up",
 
+
 elytra = "elytra flying",
+
 elytradown = "flying down/diving while elytra flying",
 
+
 trident = "riptide trident lunging",
+
 sleep = "sleeping",
+
 vehicle = "while in any vehicle",
+
 swim = "while swimming",
 
+
 crawl = "crawling and moving",
+
 crawlstill = "crawling and still",
 
 fly = "creative flying",
+
 flywalk = "flying and moving",
+
 flywalkback = "flying and moving backwards",
+
 flysprint  = "flying and sprinting",
+
 flyup = "flying and going up",
+
 flydown = "flying and going down",
 
+
 climb = "climbing a ladder",
+
 climbstill = "not moving on a ladder without crouching (hitting a ceiling usually)",
+
 climbdown = "going down a ladder",
+
 climbcrouch = "crouching on a ladder",
+
 climbcrouchwalk = "crouching on a ladder and moving",
 
+
 water = "being in water without swimming",
+
 waterwalk = "in water and moving",
+
 waterwalkback = "in water and moving backwards",
+
 waterup = "in water and going up",
+
 waterdown = "in water and going down",
+
 watercrouch = "in water and crouching",
+
 watercrouchwalk = "in water and crouching and walking",
+
 watercrouchwalkback = "in water and crouching and walking backwards",
+
 watercrouchdown = "in water and crouching and going down",
+
 watercrouchup = "in water and crouching and going up. only possible in bubble columns",
 
+
 hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
+
 death = "dying",
 
     -- Inclusive Animations:
 
 attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
+
 attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
+
 mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
+
 mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
+
 useR = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the right hand",
+
 useL = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the left hand",
 
+
+
 eatR = "eating from the right hand",
+
 eatL = "eating from the left hand",
+
 drinkR = "drinking from the right hand",
+
 drinkL = "drinking from the left hand",
+
 blockR = "blocking from the right hand",
+
 blockL = "blocking from the left hand",
+
 bowR = "drawing back a bow from the right hand",
+
 bowL = "drawing back a bow from the left hand",
+
 loadR = "loading a crossbow from the right hand",
+
 loadL = "loading a crossbow from the left hand",
+
 crossbowR = "holding a loaded crossbow in the right hand",
+
 crossbowL = "holding a loaded crossbow in the left hand",
+
 spearR = "holding up a trident in the right hand",
+
 spearL = "holding up a trident in the left hand",
+
 spyglassR = "holding up a spyglass from the right hand",
+
 spyglassL = "holding up a spyglass from the left hand",
+
 hornR = "using a horn in the right hand",
+
 hornL = "using a horn in the left hand",
 
+
 holdR = "holding an item in the right hand",
+
 holdL = "holding an item in the left hand",
 }
