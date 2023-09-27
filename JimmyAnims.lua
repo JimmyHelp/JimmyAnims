@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V3 for 0.1.0 and above
+-- + V4 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Now with animation integration, as an alternative to using priority
@@ -229,6 +229,13 @@ local animsTable= {
 local excluState
 local incluState
 
+local holdRanims = {}
+local holdLanims = {}
+local attackRanims = {}
+local attackLanims = {}
+local mineRanims = {}
+local mineLanims = {}
+
 local hasJumped = false
 
 local sleeping
@@ -279,6 +286,8 @@ local hitBlock
 local rightMine
 local leftMine
 local handedness
+local rightItem
+local leftItem
 
 function pings.JimmyAnims_cFly(x)
     flying = x
@@ -308,11 +317,11 @@ function pings.JimmyAnims_Attacking(x)
         rightMine = rightSwing and hitBlock and not targetEntity
         leftMine = leftSwing and hitBlock and not targetEntity
         for _, path in pairs(bbmodels) do    
-            if rightAttack or (rightMine and not path.mineR) then
-                if path.attackR and incluState then path.attackR:play() end
+            if rightAttack and path.attackR and incluState then 
+                path.attackR:play()
             end
-            if leftAttack or (leftMine and not path.mineL) then
-                if path.attackL and incluState then path.attackL:play() end
+            if leftAttack and path.attackL and incluState then 
+                path.attackL:play()
             end
             if path.mineR and rightMine and incluState then
                 path.mineR:play()
@@ -321,6 +330,83 @@ function pings.JimmyAnims_Attacking(x)
                 path.mineL:play()
             end
         end
+
+        if rightAttack and incluState then
+            for _, value in pairs(attackRanims) do
+                if value:getName():find("ID_") then
+                    if rightItem.id:find(value:getName():gsub("_attackR",""):gsub("ID_","")) then
+                        value:play()
+                    end
+                elseif value:getName():find("Name_") then
+                    if rightItem:getName():find(value:getName():gsub("_attackR",""):gsub("Name_","")) then
+                        value:play()
+                    end
+                end
+                if value:isPlaying() then
+                    for _, path in pairs(bbmodels) do  
+                        if path.attackR then path.attackR:stop() end
+                    end
+                end
+            end
+        end
+
+        if leftAttack and incluState then
+            for _, value in pairs(attackLanims) do
+                if value:getName():find("ID_") then
+                    if leftItem.id:find(value:getName():gsub("_attackL",""):gsub("ID_","")) then
+                        value:play()
+                    end
+                elseif value:getName():find("Name_") then
+                    if leftItem:getName():find(value:getName():gsub("_attackL",""):gsub("Name_","")) then
+                        value:play()
+                    end
+                end
+                if value:isPlaying() then
+                    for _, path in pairs(bbmodels) do  
+                        if path.attackL then path.attackL:stop() end
+                    end
+                end
+            end
+        end
+
+        if rightMine and incluState then
+            for _, value in pairs(mineRanims) do
+                if value:getName():find("ID_") then
+                    if rightItem.id:find(value:getName():gsub("_mineR",""):gsub("ID_","")) then
+                        value:play()
+                    end
+                elseif value:getName():find("Name_") then
+                    if rightItem:getName():find(value:getName():gsub("_mineR",""):gsub("Name_","")) then
+                        value:play()
+                    end
+                end
+                if value:isPlaying() then
+                    for _, path in pairs(bbmodels) do  
+                        if path.mineR then path.mineR:stop() end
+                    end
+                end
+            end
+        end
+
+        if rightMine and incluState then
+            for _, value in pairs(mineLanims) do
+                if value:getName():find("ID_") then
+                    if leftItem.id:find(value:getName():gsub("_mineL",""):gsub("ID_","")) then
+                        value:play()
+                    end
+                elseif value:getName():find("Name_") then
+                    if leftItem:getName():find(value:getName():gsub("_mineL",""):gsub("Name_","")) then
+                        value:play()
+                    end
+                end
+                if value:isPlaying() then
+                    for _, path in pairs(bbmodels) do  
+                        if path.mineL then path.mineL:stop() end
+                    end
+                end
+            end
+        end
+
     end)
 end
 
@@ -578,6 +664,33 @@ local function bodyAnims()
     end
 end
 
+local test = {}
+
+local function animInit()
+    for _, path in pairs(bbmodels) do
+        for _,anim in pairs(path) do
+            if anim:getName():find("_holdR") then
+                holdRanims[#holdRanims+1] = anim
+            end
+            if anim:getName():find("_holdL") then
+                holdLanims[#holdLanims+1] = anim
+            end
+            if anim:getName():find("_attackR") then
+                attackRanims[#attackRanims+1] = anim
+            end
+            if anim:getName():find("_attackL") then
+                attackLanims[#attackLanims+1] = anim
+            end
+            if anim:getName():find("_mineR") then
+                mineRanims[#mineRanims+1] = anim
+            end
+            if anim:getName():find("_mineL") then
+                mineLanims[#mineLanims+1] = anim
+            end
+        end
+    end
+end
+
 local function handAnims()
     incluState = not animsTable.allVar and not animsTable.incluVar
 
@@ -594,8 +707,8 @@ local function handAnims()
     rightMine = rightSwing and hitBlock and not targetEntity
     leftMine = leftSwing and hitBlock and not targetEntity
 
-    local rightItem = player:getHeldItem(handedness)
-    local leftItem = player:getHeldItem(not handedness)
+    rightItem = player:getHeldItem(handedness)
+    leftItem = player:getHeldItem(not handedness)
     local usingR = activeness == rightActive and rightItem:getUseAction()
     local usingL = activeness == leftActive and leftItem:getUseAction()
 
@@ -626,21 +739,33 @@ local function handAnims()
     local loadRState = using and usingR == "CROSSBOW"
     local loadLState = using and usingL == "CROSSBOW"
 
-    local rightHoldState = rightItem.id ~= "minecraft:air" and not (using or crossR or crossL)
-    local leftHoldState = leftItem.id ~= "minecraft:air" and not (using or crossL or crossR)
+    local exclude = not (using or crossR or crossL)
+    local rightHoldState = rightItem.id ~= "minecraft:air" and exclude
+    local leftHoldState = leftItem.id ~= "minecraft:air" and exclude
 
     local swingDuration = player:getSwingDuration()
+
+    
+    for _, value in pairs(attackRanims) do
+        value:speed((value:getLength()*20)/swingDuration)
+    end
+    for _, value in pairs(attackLanims) do
+        value:speed((value:getLength()*20)/swingDuration)
+    end
+
+    for _, value in pairs(mineRanims) do
+        value:speed((value:getLength()*20)/swingDuration)
+    end
+    for _, value in pairs(mineLanims) do
+        value:speed((value:getLength()*20)/swingDuration)
+    end
 
     for _, path in pairs(bbmodels) do
         if path.mineR and leftPress and rightMine and incluState then
             path.mineR:play()
-        elseif path.attackR and leftPress and rightMine and incluState then
-            path.attackR:play()
         end
         if path.mineL and leftPress and leftMine and incluState then
             path.mineL:play()
-        elseif path.attackL and leftPress and leftMine and incluState then
-            path.attackL:play()
         end
         
         if path.useR and rightPress and rightSwing and incluState then
@@ -675,8 +800,69 @@ local function handAnims()
         if path.spyglassL then path.spyglassL:playing(incluState and spyglassLState) end
         if path.hornR then path.hornR:playing(incluState and hornRState) end
         if path.hornL then path.hornL:playing(incluState and hornLState) end
+
         if path.holdR then path.holdR:playing(incluState and rightHoldState) end
         if path.holdL then path.holdL:playing(incluState and leftHoldState) end
+    end
+
+    for _,value in pairs(mineRanims) do
+        if value:getName():find("ID_") then
+            if rightItem.id:find(value:getName():gsub("_mineR",""):gsub("ID_","")) and leftPress and rightMine and incluState then
+                value:play()
+            end
+        elseif value:getName():find("Name_") then
+            if rightItem:getName():find(value:getName():gsub("_mineR",""):gsub("Name_","")) and leftPress and rightMine and incluState then
+                value:play()
+            end
+        end
+        if value:isPlaying() then
+            for _, path in pairs(bbmodels) do
+                if path.mineR then path.mineR:stop() end
+            end
+        end
+    end
+
+    for _,value in pairs(mineLanims) do
+        if value:getName():find("ID_") then
+            if leftItem.id:find(value:getName():gsub("_mineL",""):gsub("ID_","")) and leftPress and leftMine and incluState then
+                value:play()
+            end
+        elseif value:getName():find("Name_") then
+            if leftItem:getName():find(value:getName():gsub("_mineL",""):gsub("Name_","")) and leftPress and leftMine and incluState then
+                value:play()
+            end
+        end
+        if value:isPlaying() then
+            for _, path in pairs(bbmodels) do
+                if path.mineL then path.mineL:stop() end
+            end
+        end
+    end
+
+    for _,value in pairs(holdRanims) do
+        if value:getName():find("ID_") then
+            value:setPlaying(rightItem.id:find(value:getName():gsub("_holdR",""):gsub("ID_","")) and incluState and exclude)
+        elseif value:getName():find("Name_") then
+            value:setPlaying(rightItem:getName():find(value:getName():gsub("_holdR",""):gsub("Name_","")) and incluState and exclude)
+        end
+        if value:isPlaying() then
+            for _, path in pairs(bbmodels) do
+                if path.holdR then path.holdR:stop() end
+            end
+        end
+    end
+
+    for _,value in pairs(holdLanims) do
+        if value:getName():find("ID_") then
+            value:setPlaying(leftItem.id:find(value:getName():gsub("_holdL",""):gsub("ID_","")) and incluState and exclude)
+        elseif value:getName():find("Name_") then
+            value:setPlaying(leftItem:getName():find(value:getName():gsub("_holdL",""):gsub("Name_","")) and incluState and exclude)
+        end
+        if value:isPlaying() then
+            for _, path in pairs(bbmodels) do
+                if path.holdL then path.holdL:stop() end
+            end
+        end
     end
 end
 
@@ -761,15 +947,33 @@ local function blend(paths, time, itemTime)
         if path.spyglassL then path.spyglassL:blendTime(itemTime) end
         if path.hornR then path.hornR:blendTime(itemTime) end
         if path.hornL then path.hornL:blendTime(itemTime) end
-        if path.attackR then path.attackR:blendTime(itemTime) end
+        --[[if path.attackR then path.attackR:blendTime(itemTime) end
         if path.attackL then path.attackL:blendTime(itemTime) end
         if path.mineR then path.mineR:blendTime(itemTime) end
         if path.mineL then path.mineL:blendTime(itemTime) end
         if path.useR then path.useR:blendTime(itemTime) end
-        if path.useL then path.useL:blendTime(itemTime) end
+        if path.useL then path.useL:blendTime(itemTime) end]]
         if path.holdR then path.holdR:blendTime(itemTime) end
         if path.holdL then path.holdL:blendTime(itemTime) end
     end
+    for _,value in pairs(holdRanims) do
+        value:blendTime(itemTime)
+    end
+    for _,value in pairs(holdLanims) do
+        value:blendTime(itemTime)
+    end
+    --[[for _,value in pairs(attackRanims) do
+        value:blendTime(itemTime)
+    end
+    for _,value in pairs(attackLanims) do
+        value:blendTime(itemTime)
+    end
+    for _,value in pairs(mineRanims) do
+        value:blendTime(itemTime)
+    end
+    for _,value in pairs(mineLanims) do
+        value:blendTime(itemTime)
+    end]]
 end
 
 wait(20,function()
@@ -787,14 +991,14 @@ local animMT = {__call = function(self, ...)
 
     errors(paths,self.dismiss)
 
-    if should_blend then blend(paths, self.excluBlendTime or 4, self.incluBlendTime or 4) end
-
     for _, v in ipairs(paths) do
         bbmodels[#bbmodels+1] = v
     end
 
     -- Init stuff.
     if init then return end
+    animInit()
+    if should_blend then blend(paths, self.excluBlendTime or 4, self.incluBlendTime or 4) end
     events.TICK:register(tick)
     init = true
 end}
