@@ -251,8 +251,31 @@ hornR = "using a horn in the right hand",
 
 hornL = "using a horn in the left hand",
 
-
 holdR = "holding an item in the right hand",
 
 holdL = "holding an item in the left hand",
 }
+
+attackR/L, mineR/L, and holdR/L can be customized to play only with specific animations
+
+For these special animations their names in blockbench are going to have three parts:
+
+1. The first part identifies if the animation is for a specific item name or a specific item id
+
+a. ID_ for id specific animations, and Name_ for name specific animations
+
+2. the string you wish to match, for ids this will be a part of the id like sword or pickaxe. For names this should be the name of the item (spaces are fine however be aware of regex characters)
+
+3. when this animation will play, right now the options are _holdR, _holdL, _attackR, _attackL, _mineR, and _mineL
+
+Examples of animation names for these animations:
+
+ID_sword_attackR - special right hand attacking animation for holding a sword
+
+ID__axe_mineR - right hand mining with an axe, note the extra _ so it won't play with pickaxes
+
+ID_bow$_holdR - right hand bow animation, note the regex $ so it doesn't play while holding bowls
+
+Name_Shovel_mineR - right hand animation for an item with Shovel in its name
+
+Name_Chaos Bringer_attackR - right hand attack for an item named Chaos Bringer
