@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V4 for 0.1.0 and above
+-- + V4.1 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Now with animation integration, as an alternative to using priority
@@ -439,7 +439,7 @@ function events.entity_init()
     oldhp = hp
 end
 
-local function interruptions()
+local function anims()
     for _, value in ipairs(allAnims) do
         if value:isPlaying() then
             animsTable.allVar = true
@@ -456,6 +456,7 @@ local function interruptions()
             animsTable.excluVar = false
         end
     end
+
     for _, value in ipairs(incluAnims) do
         if value:isPlaying() then
             animsTable.incluVar = true
@@ -464,9 +465,10 @@ local function interruptions()
             animsTable.incluVar = false
         end
     end
-end
 
-local function bodyAnims()
+    excluState = not animsTable.allVar and not animsTable.excluVar
+    incluState = not animsTable.allVar and not animsTable.incluVar
+
     if host:isHost() then
         cFlying = host:isFlying()
         if cFlying ~= oldcFlying then
@@ -545,7 +547,54 @@ local function bodyAnims()
     local forward = walking and not backwards
     local backward = walking and backwards
 
-    excluState = not animsTable.allVar and not animsTable.excluVar
+        -- we be holding items tho
+        handedness = player:isLeftHanded()
+        rightActive = handedness and "OFF_HAND" or "MAIN_HAND"
+        leftActive = not handedness and "OFF_HAND" or "MAIN_HAND"
+        local activeness = player:getActiveHand()
+        local using = player:isUsingItem()
+        rightSwing = player:getSwingArm() == rightActive and not sleeping
+        leftSwing = player:getSwingArm() == leftActive and not sleeping
+        targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
+        hitBlock = not (next(player:getTargetedBlock(true,reach):getTextures()) == nil)
+        rightMine = rightSwing and hitBlock and not targetEntity
+        leftMine = leftSwing and hitBlock and not targetEntity
+    
+        rightItem = player:getHeldItem(handedness)
+        leftItem = player:getHeldItem(not handedness)
+        local usingR = activeness == rightActive and rightItem:getUseAction()
+        local usingL = activeness == leftActive and leftItem:getUseAction()
+    
+        local crossR = rightItem.tag and rightItem.tag["Charged"] == 1
+        local crossL = leftItem.tag and leftItem.tag["Charged"] == 1
+    
+        local drinkRState = using and usingR == "DRINK"
+        local drinkLState = using and usingL == "DRINK"
+    
+        local eatRState = using and usingR == "EAT"
+        local eatLState = using and usingL == "EAT"
+    
+        local blockRState = using and usingR == "BLOCK"
+        local blockLState = using and usingL == "BLOCK"
+    
+        local bowRState = using and usingR == "BOW"
+        local bowLState = using and usingL == "BOW"
+    
+        local spearRState = using and usingR == "SPEAR"
+        local spearLState = using and usingL == "SPEAR"
+    
+        local spyglassRState = using and usingR == "SPYGLASS"
+        local spyglassLState = using and usingL == "SPYGLASS"
+    
+        local hornRState = using and usingR == "TOOT_HORN"
+        local hornLState = using and usingL == "TOOT_HORN"
+    
+        local loadRState = using and usingR == "CROSSBOW"
+        local loadLState = using and usingL == "CROSSBOW"
+    
+        local exclude = not (using or crossR or crossL)
+        local rightHoldState = rightItem.id ~= "minecraft:air" and exclude
+        local leftHoldState = leftItem.id ~= "minecraft:air" and exclude
 
     -- anim states
     for _, path in pairs(bbmodels) do
@@ -661,106 +710,7 @@ local function bodyAnims()
         if path.watercrouchup then path.watercrouchup:playing(excluState and watercrouchupState) end
 
         if path.death then path.death:playing(excluState and deadState) end
-    end
-end
 
-local test = {}
-
-local function animInit()
-    for _, path in pairs(bbmodels) do
-        for _,anim in pairs(path) do
-            if anim:getName():find("_holdR") then
-                holdRanims[#holdRanims+1] = anim
-            end
-            if anim:getName():find("_holdL") then
-                holdLanims[#holdLanims+1] = anim
-            end
-            if anim:getName():find("_attackR") then
-                attackRanims[#attackRanims+1] = anim
-            end
-            if anim:getName():find("_attackL") then
-                attackLanims[#attackLanims+1] = anim
-            end
-            if anim:getName():find("_mineR") then
-                mineRanims[#mineRanims+1] = anim
-            end
-            if anim:getName():find("_mineL") then
-                mineLanims[#mineLanims+1] = anim
-            end
-        end
-    end
-end
-
-local function handAnims()
-    incluState = not animsTable.allVar and not animsTable.incluVar
-
-    -- we be holding items tho
-    handedness = player:isLeftHanded()
-    rightActive = handedness and "OFF_HAND" or "MAIN_HAND"
-    leftActive = not handedness and "OFF_HAND" or "MAIN_HAND"
-    local activeness = player:getActiveHand()
-    local using = player:isUsingItem()
-    rightSwing = player:getSwingArm() == rightActive and not sleeping
-    leftSwing = player:getSwingArm() == leftActive and not sleeping
-    targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
-    hitBlock = not (next(player:getTargetedBlock(true,reach):getTextures()) == nil)
-    rightMine = rightSwing and hitBlock and not targetEntity
-    leftMine = leftSwing and hitBlock and not targetEntity
-
-    rightItem = player:getHeldItem(handedness)
-    leftItem = player:getHeldItem(not handedness)
-    local usingR = activeness == rightActive and rightItem:getUseAction()
-    local usingL = activeness == leftActive and leftItem:getUseAction()
-
-    local crossR = rightItem.tag and rightItem.tag["Charged"] == 1
-    local crossL = leftItem.tag and leftItem.tag["Charged"] == 1
-
-    local drinkRState = using and usingR == "DRINK"
-    local drinkLState = using and usingL == "DRINK"
-
-    local eatRState = (using and usingR == "EAT")
-    local eatLState = (using and usingL == "EAT")
-
-    local blockRState = using and usingR == "BLOCK"
-    local blockLState = using and usingL == "BLOCK"
-
-    local bowRState = using and usingR == "BOW"
-    local bowLState = using and usingL == "BOW"
-
-    local spearRState = using and usingR == "SPEAR"
-    local spearLState = using and usingL == "SPEAR"
-
-    local spyglassRState = using and usingR == "SPYGLASS"
-    local spyglassLState = using and usingL == "SPYGLASS"
-
-    local hornRState = using and usingR == "TOOT_HORN"
-    local hornLState = using and usingL == "TOOT_HORN"
-
-    local loadRState = using and usingR == "CROSSBOW"
-    local loadLState = using and usingL == "CROSSBOW"
-
-    local exclude = not (using or crossR or crossL)
-    local rightHoldState = rightItem.id ~= "minecraft:air" and exclude
-    local leftHoldState = leftItem.id ~= "minecraft:air" and exclude
-
-    local swingDuration = player:getSwingDuration()
-
-    
-    for _, value in pairs(attackRanims) do
-        value:speed((value:getLength()*20)/swingDuration)
-    end
-    for _, value in pairs(attackLanims) do
-        value:speed((value:getLength()*20)/swingDuration)
-    end
-
-    for _, value in pairs(mineRanims) do
-        value:speed((value:getLength()*20)/swingDuration)
-    end
-    for _, value in pairs(mineLanims) do
-        value:speed((value:getLength()*20)/swingDuration)
-    end
-
-    for _, path in pairs(bbmodels) do
         if path.mineR and leftPress and rightMine and incluState then
             path.mineR:play()
         end
@@ -774,13 +724,6 @@ local function handAnims()
         if path.useL and rightPress and leftSwing and incluState then
             path.useL:play()
         end
-
-        if path.useR then path.useR:speed((path.useR:getLength()*20)/swingDuration) end
-        if path.useL then path.useL:speed((path.useL:getLength()*20)/swingDuration) end
-        if path.attackR then path.attackR:speed((path.attackR:getLength()*20)/swingDuration) end
-        if path.attackL then path.attackL:speed((path.attackL:getLength()*20)/swingDuration) end
-        if path.mineR then path.mineR:speed((path.mineR:getLength()*20)/swingDuration) end
-        if path.mineL then path.mineL:speed((path.mineL:getLength()*20)/swingDuration) end
 
         if path.eatR then path.eatR:playing(incluState and eatRState or (drinkRState and not path.drinkR)) end
         if path.eatL then path.eatL:playing(incluState and eatLState or (drinkLState and not path.drinkL)) end
@@ -866,10 +809,33 @@ local function handAnims()
     end
 end
 
+local function animInit()
+    for _, path in pairs(bbmodels) do
+        for _,anim in pairs(path) do
+            if anim:getName():find("_holdR") then
+                holdRanims[#holdRanims+1] = anim
+            end
+            if anim:getName():find("_holdL") then
+                holdLanims[#holdLanims+1] = anim
+            end
+            if anim:getName():find("_attackR") then
+                attackRanims[#attackRanims+1] = anim
+            end
+            if anim:getName():find("_attackL") then
+                attackLanims[#attackLanims+1] = anim
+            end
+            if anim:getName():find("_mineR") then
+                mineRanims[#mineRanims+1] = anim
+            end
+            if anim:getName():find("_mineL") then
+                mineLanims[#mineLanims+1] = anim
+            end
+        end
+    end
+end
+
 local function tick()
-    bodyAnims()
-    handAnims()
-    pcall(interruptions)
+    anims()
 end
 
 local GSAnimBlend
@@ -947,12 +913,12 @@ local function blend(paths, time, itemTime)
         if path.spyglassL then path.spyglassL:blendTime(itemTime) end
         if path.hornR then path.hornR:blendTime(itemTime) end
         if path.hornL then path.hornL:blendTime(itemTime) end
-        --[[if path.attackR then path.attackR:blendTime(itemTime) end
+        if path.attackR then path.attackR:blendTime(itemTime) end
         if path.attackL then path.attackL:blendTime(itemTime) end
         if path.mineR then path.mineR:blendTime(itemTime) end
         if path.mineL then path.mineL:blendTime(itemTime) end
         if path.useR then path.useR:blendTime(itemTime) end
-        if path.useL then path.useL:blendTime(itemTime) end]]
+        if path.useL then path.useL:blendTime(itemTime) end
         if path.holdR then path.holdR:blendTime(itemTime) end
         if path.holdL then path.holdL:blendTime(itemTime) end
     end
@@ -962,7 +928,7 @@ local function blend(paths, time, itemTime)
     for _,value in pairs(holdLanims) do
         value:blendTime(itemTime)
     end
-    --[[for _,value in pairs(attackRanims) do
+    for _,value in pairs(attackRanims) do
         value:blendTime(itemTime)
     end
     for _,value in pairs(attackLanims) do
@@ -973,7 +939,7 @@ local function blend(paths, time, itemTime)
     end
     for _,value in pairs(mineLanims) do
         value:blendTime(itemTime)
-    end]]
+    end
 end
 
 wait(20,function()
@@ -1005,18 +971,27 @@ end}
 
 local function addAllAnims(...)
     for _, v in ipairs{...} do
+        assert(
+            type(v) == "Animation",
+            "§aCustom Script Warning: §4addAllAnims was given something that isn't an animation, check its spelling for errors.§c")
       allAnims[#allAnims+1] = v
     end
 end
 
 local function addExcluAnims(...)
     for _, v in ipairs{...} do
+        assert(
+            type(v) == "Animation",
+            "§aCustom Script Warning: §4addExcluAnims was given something that isn't an animation, check its spelling for errors.§c")
       excluAnims[#excluAnims+1] = v
     end
 end
 
 local function addIncluAnims(...)
     for _, v in ipairs{...} do
+        assert(
+            type(v) == "Animation",
+            "§aCustom Script Warning: §4addIncluAnims was given something that isn't an animation, check its spelling for errors.§c")
       incluAnims[#incluAnims+1] = v
     end
 end
