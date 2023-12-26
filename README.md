@@ -36,7 +36,7 @@ anims(animations.BBMODEL_NAME_HERE)
 There's an explanation on all of these below
 
 ---------
-JimmyAnims has two "types" of animations: 'exclusive' animations and 'invlusive' animations.
+JimmyAnims has two "types" of animations: 'exclusive' animations and 'inclusive' animations.
 
 Exclusive animations: Cannot play at the same time, these are the type of player states like idle, walk, swim, elytra gliding, etc
 
