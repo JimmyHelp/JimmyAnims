@@ -1,218 +1,24 @@
 -- + Made by Jimmy Hellp
--- + V4.1 for 0.1.0 and above
+-- + V5 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
--- + Now with animation integration, as an alternative to using priority
-
---[[---------- YOU ARE NOT SUPPOSED TO EDIT THIS SCRIPT. DO SO AT YOUR OWN RISK. DELETE THE ERRORS AT YOUR OWN RISK. THEY'RE THERE TO TROUBLESHOOT PROBLEMS NOT TO INCONVENIENCE YOU --------
-
-HOW TO USE: (THIS CODE DOES NOT RUN, DO NOT EDIT THIS AND EXPECT RESULTS, MOVE IT TO A DIFFERENT SCRIPT AS THE INSTRUCTIONS SAY)
-
-In a DIFFERENT script put this code:
-
-local anims = require("JimmyAnims")
-anims(animations.BBMODEL_NAME_HERE)
-
-Where you need to replace BBMODEL_NAME_HERE with the name of the bbmodel that contains the animations. If you wish to use multiple bbmodels add more as arguments.
-
-If JimmyAnims is in a subfolder, the name of the subfolder is added to the script name like this:
-
-local anims = require("subfolder.JimmyAnims")
-
-Example of multiple bbmodels:
-
-local anims = require("JimmyAnims")
-anims(animations.BBMODEL_NAME_HERE,animations.EXAMPLE)
-
-If you make a typo with one of the bbmodel names when using multiple bbmodels the script won't be able to warn you. You're gonna have to spellcheck it.
-
-Example of all functions with their default values:
-
-local anims = require('JimmyAnims')
-anims.excluBlendTime = 4
-anims.incluBlendTime = 4
-anims.autoBlend = false
-anims.dismiss = false
-anims.addExcluAnims()
-anims.addIncluAnims()
-anims.addAllAnims()
-anims(animations.BBMODEL_NAME_HERE)
-
-There's an explanation on all of these below
-
----------
-JimmyAnims has two "types" of animations: 'exclusive' animations and 'invlusive' animations.
-
-Exclusive animations: Cannot play at the same time, these are the type of player states like idle, walk, swim, elytra gliding, etc
-
-Inclusive animations: Can play at the same time alongside each other and exclusive animations, these are the types of animations like eatR (only exception is holdR\L which won't play while using items)
-
---------
-
-Animation Integration:
-You can use the custom addExcluAnims, addIncluAnims, and addAllAnims functions to stop their associated animation types.
-
-Example usage:
-anims.addExcluAnims(animations.BBMODEL.example,animations.BBMODEL.second)
-
-This will make it so whenever any of the given animations are playing, all exclusive animations will be stopped. addIncluAnims stops inclusive animations, and addAllAnims stops every animation.
-
----------
-
-The script will automatically error if it detects an animation name with a period in it (JimmyAnims doesn't accept animations with periods in them, so only use this if the animation isn't meant for the handler).
-
-You can dismiss this using
-
-anims.dismiss = true
-
-This goes directly after the require like this:
-
-local anims = require("JimmyAnims")
-anims.dismiss = true
-anims(animations.BBMODEL_NAME_HERE)
-
----------
-
-This script is compatible with GSAnimBlend.
-It will automatically apply blendTime values to every animation, you can stop this or change the blend times using a couple functions.
-
-Example of changing GSAnimBlend compatbility:
-local anims = require("JimmyAnims")
-anims.excluBlendTime = 4
-anims.incluBlendTime = 4
-anims.autoBlend = true
-anims(animations.NAME_HERE)
-
-excluBlendTime is for all the animations that can't play alongside each other
-incluBlendTime is for animations that deal with items and hands (like, eatR or attackR)- aka ones that can play alongside each other and exclusive animations
-autoBlend can be set to false to turn off the automatic blending
-
-If you want to change individual animation values but don't want to disable autoBlend, you can change the blendTime value like normal underneath the final setup for JimmyAnims.
-
-Note: These must be ABOVE where you set the bbmodel, like in the example. A different order will mess it up.
-
----------
-
-LIST OF ANIMATIONS:
-REMEMBER: ALL ANIMATIONS ARE OPTIONAL. IF YOU DON'T WANT ONE, DON'T ADD IT, ANOTHER ANIMATION WILL PLAY IN ITS STEAD FOR ALL ANIMATIONS BUT IDLE, WALK, AND CROUCH
-To access the list of animations run this line of code IN THE OTHER SCRIPT AND UNDERNEATH THE REQUIRE:
-(sadly Figura scrambles the order of the list, you can also look below to see it in the script)
-
-logTable(anims.animsList)
-
-Or you can look below at animsList. The stuff on the right is the animation name, the stuff on the left is an explanation of when the animation plays If you're confused about when animations will play, try them out.]]
-
-local animsList = {
-    -- Exclusive Animations
-idle="idling",
-walk="walking",
-walkback="walking backwards",
-jumpup="jumping up caused via the jump key",
-jumpdown="jumping down after a jump up",
-fall="falling after a while",
-
-sprint = "sprinting",
-sprintjumpup="sprinting and jumping up caused via the jump key",
-sprintjumpdown="sprinting and jumping down after a jump up",
-
-crouch = "crouching",
-crouchwalk = "crouching and walking",
-crouchwalkback = "crouching and walking backwards",
-crouchjumpup = "crouching and jumping up caused via the jump key",
-crouchjumpdown = "crouching and jumping down after a jump up",
-
-elytra = "elytra flying",
-elytradown = "flying down/diving while elytra flying",
-
-trident = "riptide trident lunging",
-sleep = "sleeping",
-vehicle = "while in any vehicle",
-swim = "while swimming",
-
-crawl = "crawling and moving",
-crawlstill = "crawling and still",
-
-fly = "creative flying",
-flywalk = "flying and moving",
-flywalkback = "flying and moving backwards",
-flysprint  = "flying and sprinting",
-flyup = "flying and going up",
-flydown = "flying and going down",
-
-climb = "climbing a ladder",
-climbstill = "not moving on a ladder without crouching (hitting a ceiling usually)",
-climbdown = "going down a ladder",
-climbcrouch = "crouching on a ladder",
-climbcrouchwalk = "crouching on a ladder and moving",
-
-water = "being in water without swimming",
-waterwalk = "in water and moving",
-waterwalkback = "in water and moving backwards",
-waterup = "in water and going up",
-waterdown = "in water and going down",
-watercrouch = "in water and crouching",
-watercrouchwalk = "in water and crouching and walking",
-watercrouchwalkback = "in water and crouching and walking backwards",
-watercrouchdown = "in water and crouching and going down",
-watercrouchup = "in water and crouching and going up. only possible in bubble columns",
-
-hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
-death = "dying",
-
-    -- Inclusive Animations:
-
-attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
-attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
-mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
-mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
-useR = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the right hand",
-useL = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the left hand",
-
-eatR = "eating from the right hand",
-eatL = "eating from the left hand",
-drinkR = "drinking from the right hand",
-drinkL = "drinking from the left hand",
-blockR = "blocking from the right hand",
-blockL = "blocking from the left hand",
-bowR = "drawing back a bow from the right hand",
-bowL = "drawing back a bow from the left hand",
-loadR = "loading a crossbow from the right hand",
-loadL = "loading a crossbow from the left hand",
-crossbowR = "holding a loaded crossbow in the right hand",
-crossbowL = "holding a loaded crossbow in the left hand",
-spearR = "holding up a trident in the right hand",
-spearL = "holding up a trident in the left hand",
-spyglassR = "holding up a spyglass from the right hand",
-spyglassL = "holding up a spyglass from the left hand",
-hornR = "using a horn in the right hand",
-hornL = "using a horn in the left hand",
-
-holdR = "holding an item in the right hand",
-holdL = "holding an item in the left hand",
-}
+-- + Also includes Manuel's Run Later script
 
 ------------------------------------------------------------------------------------------------------------------------
-
-local avatarVer = "0.1.0"
-assert(
-  client.compareVersions(client.getFiguraVersion(), avatarVer) > -1,
-  "§aCustom Script Warning: §4Your version of Figura is out of date for this animation template, the expected version is ".. avatarVer.." or newer. \n".." Update your Figura version to "..avatarVer.." or newer.§c"
-)
-
 
 local function errors(paths,dismiss)
     assert(
         next(paths),
-        "§aCustom Script Warning: §4No blockbench models were found, or the blockbench model found contained no animations. \n" .." Check that there are no typos in the given bbmodel name, or that the bbmodel has animations by using this line of code at the top of your script: \n"
-        .."§f logTable(animations.BBMODEL_NAME_HERE) \n ".."§4If this returns nil your bbmodel name is wrong or it has no animations. You can use \n".."§f logTable(models:getChildren()) \n".."§4 to get the name of every bbmodel in your avatar.§c"
+        "§aCustom Script Warning: §6No blockbench models were found, or the blockbench model found contained no animations. \n" .." Check that there are no typos in the given bbmodel name, or that the bbmodel has animations by using this line of code at the top of your script: \n"
+        .."§f logTable(animations.BBMODEL_NAME_HERE) \n ".."§6If this returns nil your bbmodel name is wrong or it has no animations. You can use \n".."§f logTable(models:getChildren()) \n".."§6 to get the name of every bbmodel in your avatar.§c"
     )
 
     for _, path in pairs(paths) do
         for _, anim in pairs(path) do
             if anim:getName():find("%.") and not dismiss then
                 error(
-                    "§aCustom Script Warning: §4The animation §b'"..anim:getName().."'§4 has a period ( . ) in its name, the handler can't use that animation and it must be renamed to fit the handler's accepted animation names. \n" ..
-                " If the animation isn't meant for the handler, you can dismiss this error by adding §fanims.dismiss = true§4 after the require but before setting the bbmodel.§c")
+                    "§aCustom Script Warning: §6The animation §b'"..anim:getName().."'§6 has a period ( . ) in its name, the handler can't use that animation and it must be renamed to fit the handler's accepted animation names. \n" ..
+                " If the animation isn't meant for the handler, you can dismiss this error by adding §fanims.dismiss = true§6 after the require but before setting the bbmodel.§c")
             end
         end
     end
@@ -243,20 +49,24 @@ local sleeping
 local hp
 local oldhp
 
-local cFlying
+local cFlying = false
 local oldcFlying = cFlying
 local flying = false
-local flyTimer = 0
+local updateTimer = 0
+local flyinit = false
+local distinit = false
 
-local dist
+local dist = 4.5
 local oldDist = dist
 local reach = 4.5
 
-local jump
-local oldJump = jump
-local holdingJ = false
+local yvel
+local cooldown
 
 local grounded
+local oldgrounded
+
+local fallVel = -0.6
 
 -- wait code from Manuel
 local timers = {}
@@ -283,6 +93,9 @@ local rightSwing
 local leftSwing
 local targetEntity
 local hitBlock
+local targetBlock
+local success
+local result
 local rightMine
 local leftMine
 local handedness
@@ -297,142 +110,149 @@ function pings.JimmyAnims_Distance(x)
     reach = x
 end
 
-function pings.JimmyAnims_Jump(x)
-    holdingJ = x
+function pings.JimmyAnims_Update(fly,dis)
+    flying = fly
+    reach = dis
 end
 
 local bbmodels = {} -- don't put things in here
 
-function pings.JimmyAnims_Attacking(x)
-    if not player:isLoaded() then return end
-    leftPress = x
-    targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
-    hitBlock = not (next(player:getTargetedBlock(true,reach):getTextures()) == nil)
-    if not leftPress then return end
-    wait(1,function()
-        rightSwing = player:getSwingArm() == rightActive and not sleeping
-        leftSwing = player:getSwingArm() == leftActive and not sleeping
-        local rightAttack = rightSwing and (not hitBlock or targetEntity)
-        local leftAttack = leftSwing and (not hitBlock or targetEntity)
-        rightMine = rightSwing and hitBlock and not targetEntity
-        leftMine = leftSwing and hitBlock and not targetEntity
-        for _, path in pairs(bbmodels) do    
-            if rightAttack and path.attackR and incluState then 
-                path.attackR:play()
+local function willAttack()
+    function pings.JimmyAnims_Attacking(x)
+        if not player:isLoaded() then return end
+        leftPress = x
+        targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
+        targetBlock = player:getTargetedBlock(true, reach)
+        success, result = pcall(targetBlock.getTextures, targetBlock)
+        if success then hitBlock = not (next(result) == nil) else hitBlock = true end
+        if not leftPress then return end
+        wait(1,function()
+            rightSwing = player:getSwingArm() == rightActive and not sleeping
+            leftSwing = player:getSwingArm() == leftActive and not sleeping
+            local rightAttack = rightSwing and (not hitBlock or targetEntity)
+            local leftAttack = leftSwing and (not hitBlock or targetEntity)
+            rightMine = rightSwing and hitBlock and not targetEntity
+            leftMine = leftSwing and hitBlock and not targetEntity
+            for _, path in pairs(bbmodels) do    
+                if rightAttack and path.attackR and incluState then 
+                    path.attackR:play()
+                end
+                if leftAttack and path.attackL and incluState then 
+                    path.attackL:play()
+                end
+                if path.mineR and rightMine and incluState then
+                    path.mineR:play()
+                end
+                if path.mineL and leftMine and incluState then
+                    path.mineL:play()
+                end
             end
-            if leftAttack and path.attackL and incluState then 
-                path.attackL:play()
-            end
-            if path.mineR and rightMine and incluState then
-                path.mineR:play()
-            end
-            if path.mineL and leftMine and incluState then
-                path.mineL:play()
-            end
-        end
 
-        if rightAttack and incluState then
-            for _, value in pairs(attackRanims) do
-                if value:getName():find("ID_") then
-                    if rightItem.id:find(value:getName():gsub("_attackR",""):gsub("ID_","")) then
-                        value:play()
+            if rightAttack and incluState then
+                for _, value in pairs(attackRanims) do
+                    if value:getName():find("ID_") then
+                        if rightItem.id:find(value:getName():gsub("_attackR",""):gsub("ID_","")) then
+                            value:play()
+                        end
+                    elseif value:getName():find("Name_") then
+                        if rightItem:getName():find(value:getName():gsub("_attackR",""):gsub("Name_","")) then
+                            value:play()
+                        end
                     end
-                elseif value:getName():find("Name_") then
-                    if rightItem:getName():find(value:getName():gsub("_attackR",""):gsub("Name_","")) then
-                        value:play()
-                    end
-                end
-                if value:isPlaying() then
-                    for _, path in pairs(bbmodels) do  
-                        if path.attackR then path.attackR:stop() end
-                    end
-                end
-            end
-        end
-
-        if leftAttack and incluState then
-            for _, value in pairs(attackLanims) do
-                if value:getName():find("ID_") then
-                    if leftItem.id:find(value:getName():gsub("_attackL",""):gsub("ID_","")) then
-                        value:play()
-                    end
-                elseif value:getName():find("Name_") then
-                    if leftItem:getName():find(value:getName():gsub("_attackL",""):gsub("Name_","")) then
-                        value:play()
-                    end
-                end
-                if value:isPlaying() then
-                    for _, path in pairs(bbmodels) do  
-                        if path.attackL then path.attackL:stop() end
+                    if value:isPlaying() then
+                        for _, path in pairs(bbmodels) do  
+                            if path.attackR then path.attackR:stop() end
+                        end
                     end
                 end
             end
-        end
 
-        if rightMine and incluState then
-            for _, value in pairs(mineRanims) do
-                if value:getName():find("ID_") then
-                    if rightItem.id:find(value:getName():gsub("_mineR",""):gsub("ID_","")) then
-                        value:play()
+            if leftAttack and incluState then
+                for _, value in pairs(attackLanims) do
+                    if value:getName():find("ID_") then
+                        if leftItem.id:find(value:getName():gsub("_attackL",""):gsub("ID_","")) then
+                            value:play()
+                        end
+                    elseif value:getName():find("Name_") then
+                        if leftItem:getName():find(value:getName():gsub("_attackL",""):gsub("Name_","")) then
+                            value:play()
+                        end
                     end
-                elseif value:getName():find("Name_") then
-                    if rightItem:getName():find(value:getName():gsub("_mineR",""):gsub("Name_","")) then
-                        value:play()
-                    end
-                end
-                if value:isPlaying() then
-                    for _, path in pairs(bbmodels) do  
-                        if path.mineR then path.mineR:stop() end
-                    end
-                end
-            end
-        end
-
-        if rightMine and incluState then
-            for _, value in pairs(mineLanims) do
-                if value:getName():find("ID_") then
-                    if leftItem.id:find(value:getName():gsub("_mineL",""):gsub("ID_","")) then
-                        value:play()
-                    end
-                elseif value:getName():find("Name_") then
-                    if leftItem:getName():find(value:getName():gsub("_mineL",""):gsub("Name_","")) then
-                        value:play()
-                    end
-                end
-                if value:isPlaying() then
-                    for _, path in pairs(bbmodels) do  
-                        if path.mineL then path.mineL:stop() end
+                    if value:isPlaying() then
+                        for _, path in pairs(bbmodels) do  
+                            if path.attackL then path.attackL:stop() end
+                        end
                     end
                 end
             end
-        end
 
-    end)
-end
+            if rightMine and incluState then
+                for _, value in pairs(mineRanims) do
+                    if value:getName():find("ID_") then
+                        if rightItem.id:find(value:getName():gsub("_mineR",""):gsub("ID_","")) then
+                            value:play()
+                        end
+                    elseif value:getName():find("Name_") then
+                        if rightItem:getName():find(value:getName():gsub("_mineR",""):gsub("Name_","")) then
+                            value:play()
+                        end
+                    end
+                    if value:isPlaying() then
+                        for _, path in pairs(bbmodels) do  
+                            if path.mineR then path.mineR:stop() end
+                        end
+                    end
+                end
+            end
 
-function pings.JimmyAnims_Using(x)
-    if not player:isLoaded() then return end
-    rightPress = x
-    if not rightPress then return end
-    wait(1,function()
-    for _, path in pairs(bbmodels) do    
-        if path.useR and player:getSwingArm() == rightActive and not sleeping and incluState then
-            path.useR:play()
-        end
-        if path.useL and player:getSwingArm() == leftActive and not sleeping and incluState then
-            path.useL:play()
-        end
+            if rightMine and incluState then
+                for _, value in pairs(mineLanims) do
+                    if value:getName():find("ID_") then
+                        if leftItem.id:find(value:getName():gsub("_mineL",""):gsub("ID_","")) then
+                            value:play()
+                        end
+                    elseif value:getName():find("Name_") then
+                        if leftItem:getName():find(value:getName():gsub("_mineL",""):gsub("Name_","")) then
+                            value:play()
+                        end
+                    end
+                    if value:isPlaying() then
+                        for _, path in pairs(bbmodels) do  
+                            if path.mineL then path.mineL:stop() end
+                        end
+                    end
+                end
+            end
+
+        end)
     end
-    end)
+
+    local attack = keybinds:fromVanilla("key.attack")
+    attack.press = function() if action_wheel:isEnabled() then return end pings.JimmyAnims_Attacking(true) end
+    attack.release = function() if action_wheel:isEnabled() then return end pings.JimmyAnims_Attacking(false) end
 end
 
-local attack = keybinds:newKeybind("Attack",keybinds:getVanillaKey("key.attack"))
-attack.press = function() pings.JimmyAnims_Attacking(true) end
-attack.release = function() pings.JimmyAnims_Attacking(false) end
+local function willUse()
+    function pings.JimmyAnims_Using(x)
+        if not player:isLoaded() then return end
+        rightPress = x
+        if not rightPress then return end
+        wait(1,function()
+        for _, path in pairs(bbmodels) do    
+            if path.useR and player:getSwingArm() == rightActive and not sleeping and incluState then
+                path.useR:play()
+            end
+            if path.useL and player:getSwingArm() == leftActive and not sleeping and incluState then
+                path.useL:play()
+            end
+        end
+        end)
+    end
 
-local use = keybinds:newKeybind("Use",keybinds:getVanillaKey("key.use"))
-use.press = function() pings.JimmyAnims_Using(true) end
-use.release = function() pings.JimmyAnims_Using(false) end
+    local use = keybinds:fromVanilla("key.use")
+    use.press = function() if action_wheel:isEnabled() then return end pings.JimmyAnims_Using(true) end
+    use.release = function() if action_wheel:isEnabled() then return end pings.JimmyAnims_Using(false) end
+end
 
 function events.entity_init()
     hp = player:getHealth() + player:getAbsorptionAmount()
@@ -470,35 +290,54 @@ local function anims()
     incluState = not animsTable.allVar and not animsTable.incluVar
 
     if host:isHost() then
-        cFlying = host:isFlying()
-        if cFlying ~= oldcFlying then
-            pings.JimmyAnims_cFly(cFlying)
-        end
-        oldcFlying = cFlying
+        if flyinit and not distinit then
+            cFlying = host:isFlying()
+            if cFlying ~= oldcFlying then
+                pings.JimmyAnims_cFly(cFlying)
+            end
+            oldcFlying = cFlying
 
-        flyTimer = flyTimer + 1
-        if flyTimer % 200 == 0 then
-            pings.JimmyAnims_cFly(cFlying)
-            pings.JimmyAnims_Distance(dist)
-        end
+            updateTimer = updateTimer + 1
+            if updateTimer % 200 == 0 then
+                pings.JimmyAnims_cFly(cFlying)
+            end
+        elseif distinit and not flyinit then
+            dist = host:getReachDistance()
+            if dist ~= oldDist then
+                pings.JimmyAnims_Distance(dist)
+            end
+            oldDist = dist
 
-        dist = host:getReachDistance()
-        if dist ~= oldDist then
-            pings.JimmyAnims_Distance(dist)
-        end
-        oldDist = dist
+            updateTimer = updateTimer + 1
+            if updateTimer % 200 == 0 then
+                pings.JimmyAnims_Distance(dist)
+            end
+        elseif distinit and flyinit then
+            cFlying = host:isFlying()
+            if cFlying ~= oldcFlying then
+                pings.JimmyAnims_cFly(cFlying)
+            end
+            oldcFlying = cFlying
 
-        jump = host:isJumping()
-        if jump ~= oldJump then
-            pings.JimmyAnims_Jump(jump)
+            dist = host:getReachDistance()
+            if dist ~= oldDist then
+                pings.JimmyAnims_Distance(dist)
+            end
+            oldDist = dist
+
+            updateTimer = updateTimer + 1
+            if updateTimer % 200 == 0 then
+                pings.JimmyAnims_Update(cFlying,dist)
+            end
         end
-        oldJump = jump
     end
 
     local velocity = player:getVelocity()
     local moving = velocity.xz:length() > 0.01
     local sprinty = player:isSprinting()
-    local sitting = player:getVehicle() ~= nil
+    local vehicle = player:getVehicle()
+    local sitting = vehicle ~= nil
+    local passenger = vehicle and vehicle:getControllingPassenger() ~= player
     local creativeFlying = flying and not sitting
     local pose = player:getPose()
     local standing = pose == "STANDING"
@@ -507,20 +346,24 @@ local function anims()
     local spin = pose == "SPIN_ATTACK"
     sleeping = pose == "SLEEPING"
     local swimming = pose == "SWIMMING"
-    local inWater = player:isUnderwater()
+    local inWater = player:isUnderwater() and not sitting
     local inLiquid = player:isInWater() or player:isInLava()
     local liquidSwim = swimming and inLiquid
     local crawling = swimming and not inLiquid
 
 
     -- hasJumped stuff
-    local yvel = velocity.y
+    
+    yvel = velocity.y
     local hover = yvel == 0
     local goingUp = yvel > 0
     local goingDown =  yvel < 0
-    local falling = yvel < -.6
+    local falling = yvel < fallVel
     local playerGround = world.getBlockState(player:getPos():add(0,-.1,0))
-    grounded = playerGround:isSolidBlock() or player:isOnGround()
+    local vehicleGround = sitting and world.getBlockState(vehicle:getPos():add(0,-.1,0))
+    oldgrounded = grounded
+    grounded = playerGround:isSolidBlock() or player:isOnGround() or (sitting and vehicleGround:isSolidBlock() or sitting and vehicle:isOnGround())
+
     local pv = velocity:mul(1, 0, 1):normalize()
     local pl = models:partToWorldMatrix():applyDir(0,0,-1):mul(1, 0, 1):normalize()
     local fwd = pv:dot(pl)
@@ -530,17 +373,22 @@ local function anims()
     local webbed = world.getBlockState(player:getPos()).id == "minecraft:cobweb"
     local ladder = player:isClimbing() and not grounded and not flying
 
-    local canJump = not (inLiquid or webbed)
+    local canJump = not (inLiquid or webbed or grounded)
 
     oldhp = hp
     hp = player:getHealth() + player:getAbsorptionAmount()
 
-    if holdingJ and canJump then hasJumped = true end
-    if grounded and not holdingJ then hasJumped = false end
+    if oldgrounded ~= grounded and not grounded and yvel > 0 then
+        cooldown = true
+        wait(10,function() cooldown = false end)
+    end
 
-    local neverJump = not (gliding or spin or sleeping or swimming or ladder or sitting)
+    if (oldgrounded ~= grounded and not grounded and yvel > 0) and canJump then hasJumped = true end
+    if (grounded and yvel == 0) or (gliding or inLiquid) then hasJumped = false end
+
+    local neverJump = not (gliding or spin or sleeping or swimming or ladder)
     local jumpingUp = hasJumped and goingUp and neverJump
-    local jumpingDown = hasJumped and goingDown and not falling and neverJump
+    local jumpingDown = hasJumped and goingDown and not falling and neverJump or (cooldown and not jumpingUp)
     local isJumping = jumpingUp or jumpingDown or falling
     local sprinting = sprinty and standing and not inLiquid and not sitting
     local walking = moving and not sprinting and not isJumping and not sitting
@@ -556,7 +404,10 @@ local function anims()
         rightSwing = player:getSwingArm() == rightActive and not sleeping
         leftSwing = player:getSwingArm() == leftActive and not sleeping
         targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
-        hitBlock = not (next(player:getTargetedBlock(true,reach):getTextures()) == nil)
+        --hitBlock = not (next(player:getTargetedBlock(true,reach):getTextures()) == nil)
+        targetBlock = player:getTargetedBlock(true, reach)
+        success, result = pcall(targetBlock.getTextures, targetBlock)
+        if success then hitBlock = not (next(result) == nil) else hitBlock = true end
         rightMine = rightSwing and hitBlock and not targetEntity
         leftMine = leftSwing and hitBlock and not targetEntity
     
@@ -591,6 +442,9 @@ local function anims()
     
         local loadRState = using and usingR == "CROSSBOW"
         local loadLState = using and usingL == "CROSSBOW"
+
+        local brushRState = using and usingR == "BRUSH"
+        local brushLState = using and usingL == "BRUSH"
     
         local exclude = not (using or crossR or crossL)
         local rightHoldState = rightItem.id ~= "minecraft:air" and exclude
@@ -605,7 +459,7 @@ local function anims()
     local flydownState = creativeFlying and goingDown
     local flywalkState = creativeFlying and forward and (not (goingDown or goingUp)) and not sleeping or (flysprintState and not path.flysprint) or (flywalkbackState and not path.flywalkback)
     or (flyupState and not path.flyup) or (flydownState and not path.flydown)
-    local flyState = creativeFlying and not moving and standing and not isJumping and not sleeping or (flywalkState and not path.flywalk) 
+    local flyState = creativeFlying and not moving and standing and not isJumping and (not (goingDown or goingUp)) and not sleeping or (flywalkState and not path.flywalk) 
 
     local watercrouchwalkbackState = inWater and crouching and backward and not goingDown
     local watercrouchwalkState = inWater and crouching and forward and not (goingDown or goingUp) or (watercrouchwalkbackState and not path.watercrouchwalkback)
@@ -613,7 +467,7 @@ local function anims()
     local watercrouchdownState = inWater and crouching and goingDown or (watercrouchupState and not path.watercrouchup)
     local watercrouchState = inWater and crouching and not moving and not (goingDown or goingUp) or (watercrouchdownState and not path.watercrouchdown) or (watercrouchwalkState and not path.watercrouchwalk)
 
-    local waterdownState = inWater and goingDown and standing and not creativeFlying
+    local waterdownState = inWater and goingDown and not falling and standing and not creativeFlying
     local waterupState = inWater and goingUp and standing and not creativeFlying
     local waterwalkbackState = inWater and backward and hover and standing and not creativeFlying
     local waterwalkState = inWater and forward and hover and standing and not creativeFlying or (waterwalkbackState and not path.waterwalkback) or (waterdownState and not path.waterdown)
@@ -628,9 +482,15 @@ local function anims()
     local elytradownState = gliding and goingDown
     local elytraState = gliding and not goingDown or (elytradownState and not path.elytradown)
 
+    local sitpassState = passenger and standing
+    local sitjumpdownState = sitting and not passenger and standing and (jumpingDown or falling)
+    local sitjumpupState = sitting and not passenger and jumpingUp and standing or (sitjumpdownState and not path.sitjumpdown)
+    local sitmovebackState = sitting and not passenger and not isJumping and backwards and standing
+    local sitmoveState = velocity:length() > 0 and not passenger and not backwards and standing and sitting and not isJumping or (sitmovebackState and not path.sitmoveback) or (sitjumpupState and not path.sitjumpup)
+    local sitState = sitting and not passenger and velocity:length() == 0 and not isJumping and standing or (sitmoveState and not path.sitmove) or (sitpassState and not path.sitpass)
+
     local tridentState = spin
     local sleepState = sleeping
-    local vehicleState = sitting
 
     local climbcrouchwalkState = ladder and crouching and (moving or yvel ~= 0)
     local climbcrouchState = ladder and crouching and hover and not moving or (climbcrouchwalkState and not path.climbcrouchwalk)
@@ -640,22 +500,23 @@ local function anims()
 
     local crouchjumpdownState = crouching and jumpingDown and not ladder and not inWater
     local crouchjumpupState = crouching and jumpingUp and not ladder or (crouchjumpdownState and not path.crouchjumpdown)
-    local crouchwalkbackState = backward and crouching and not ladder and not inWater
-    local crouchwalkState = forward and crouching and not ladder and not inWater or (crouchwalkbackState and not path.crouchwalkback) or (crouchjumpupState and not path.crouchjumpup)
-    local crouchState = crouching and not walking and not isJumping and not ladder and not inWater or (crouchwalkState and not path.crouchwalk) or (climbcrouchState and not path.climbcrouch) or (watercrouchState and not path.watercrouch)
+    local crouchwalkbackState = backward and crouching and not ladder and not inWater or (watercrouchwalkbackState and not path.watercrouchwalkback and not path.watercrouchwalk and not path.watercrouch)
+    local crouchwalkState = forward and crouching and not ladder and not inWater or (crouchwalkbackState and not path.crouchwalkback) or (crouchjumpupState and not path.crouchjumpup) or ((watercrouchwalkState and not watercrouchwalkbackState) and not path.watercrouchwalk and not path.watercrouch)
+    local crouchState = crouching and not walking and not isJumping and not ladder and not inWater and not cooldown or (crouchwalkState and not path.crouchwalk) or (climbcrouchState and not path.climbcrouch) or ((watercrouchState and not watercrouchwalkState) and not path.watercrouch)
     
-    local fallState = falling and not gliding and not creativeFlying
-    local jumpdownState = jumpingDown and not sprinting and not crouching and not creativeFlying and not inWater or (fallState and not path.fall)
-    local jumpupState = jumpingUp and not sprinting and not crouching and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident)
+    local fallState = falling and not gliding and not creativeFlying and not sitting
+    
+    local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not gliding and not creativeFlying and not inWater or (fallState and not path.fall)
+    local jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident)
     local sprintjumpdownState = jumpingDown and sprinting and not creativeFlying and not ladder
     local sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (sprintjumpdownState and not path.sprintjumpdown)
 
-    local sprintState = sprinting and not isJumping and not creativeFlying and not ladder or (sprintjumpupState and not path.sprintjumpup)
-    local walkbackState = backward and standing and not creativeFlying and not ladder and not inWater
-    local walkState = forward and standing and not creativeFlying and not ladder and not inWater or (walkbackState and not path.walkback) or (sprintState and not path.sprint) or (climbState and not path.climb) 
-    or (swimState and not path.swim) or (elytraState and not path.elytra) or (jumpupState and not path.jumpup) or (waterwalkState and (not path.waterwalk and not path.water)) or (flywalkState and not path.flywalk and not path.fly)
+    local sprintState = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown or (sprintjumpupState and not path.sprintjumpup)
+    local walkbackState = backward and standing and not creativeFlying and not ladder and not inWater or (flywalkbackState and not path.flywalkback and not path.flywalk and not path.fly)
+    local walkState = forward and standing and not creativeFlying and not ladder and not inWater and not cooldown or (walkbackState and not path.walkback) or (sprintState and not path.sprint) or (climbState and not path.climb) 
+    or (swimState and not path.swim) or (elytraState and not path.elytra) or (jumpupState and not path.jumpup) or (waterwalkState and (not path.waterwalk and not path.water)) or ((flywalkState and not flywalkbackState) and not path.flywalk and not path.fly)
     or (crouchwalkState and not path.crouch)
-    local idleState = not moving and standing and not isJumping and not sitting and not creativeFlying and not ladder and not inWater or (sleepState and not path.sleep) or (vehicleState and not path.vehicle)
+    local idleState = not moving and standing and not isJumping and not sitting and not creativeFlying and not ladder and not inWater or (sleepState and not path.sleep) or (sitState and not path.sit)
     or ((waterState and not waterwalkState) and not path.water) or ((flyState and not flywalkState) and not path.fly) or ((crouchState and not crouchwalkState) and not path.crouch)
 
     local deadState = hp <= 0
@@ -684,7 +545,12 @@ local function anims()
         if path.trident then path.trident:playing(excluState and tridentState) end
         if path.sleep then path.sleep:playing(excluState and sleepState) end
         if path.swim then path.swim:playing(excluState and swimState) end
-        if path.vehicle then path.vehicle:playing(excluState and vehicleState) end
+        if path.sit then path.sit:playing(excluState and sitState) end
+        if path.sitmove then path.sitmove:playing(excluState and sitmoveState) end
+        if path.sitmoveback then path.sitmoveback:playing(excluState and sitmovebackState) end
+        if path.sitjumpup then path.sitjumpup:playing(excluState and sitjumpupState) end
+        if path.sitjumpdown then path.sitjumpdown:playing(excluState and sitjumpdownState) end
+        if path.sitpass then path.sitpass:playing(excluState and sitpassState) end
         if path.crawl then path.crawl:playing(excluState and crawlState) end
         if path.crawlstill then path.crawlstill:playing(excluState and crawlstillState) end
         if path.fly then path.fly:playing(excluState and flyState) end
@@ -743,6 +609,8 @@ local function anims()
         if path.spyglassL then path.spyglassL:playing(incluState and spyglassLState) end
         if path.hornR then path.hornR:playing(incluState and hornRState) end
         if path.hornL then path.hornL:playing(incluState and hornLState) end
+        if path.brushR then path.brushR:playing(incluState and brushRState) end
+        if path.brushL then path.brushL:playing(incluState and brushLState) end
 
         if path.holdR then path.holdR:playing(incluState and rightHoldState) end
         if path.holdL then path.holdL:playing(incluState and leftHoldState) end
@@ -809,9 +677,24 @@ local function anims()
     end
 end
 
+local attackinit = true
+local useinit = true
 local function animInit()
     for _, path in pairs(bbmodels) do
         for _,anim in pairs(path) do
+            if (anim:getName():find("attackR") or anim:getName():find("attackL") or anim:getName():find("mineR") or anim:getName():find("mineL")) and attackinit then
+                attackinit = false
+                distinit = true
+                willAttack()
+            end
+            if (anim:getName() == "useR" or anim:getName() == "useL") and useinit then
+                useinit = false
+                distinit = true
+                willUse()
+            end
+            if anim:getName():find("^fly") then
+                flyinit = true
+            end
             if anim:getName():find("_holdR") then
                 holdRanims[#holdRanims+1] = anim
             end
@@ -865,7 +748,12 @@ local function blend(paths, time, itemTime)
         if path.flysprint then path.flysprint:blendTime(time) end
         if path.flyup then path.flyup:blendTime(time) end
         if path.flydown then path.flydown:blendTime(time) end
-        if path.vehicle then path.vehicle:blendTime(time) end
+        if path.sit then path.sit:blendTime(time) end
+        if path.sitmove then path.sitmove:blendTime(time) end
+        if path.sitmoveback then path.sitmoveback:blendTime(time) end
+        if path.sitjumpup then path.sitjumpup:blendTime(time) end
+        if path.sitjumpdown then path.sitjumpdown:blendTime(time) end
+        if path.sitpass then path.sitpass:blendTime(time) end
         if path.sleep then path.sleep:blendTime(time) end
         if path.climb then path.climb:blendTime(time) end
         if path.climbstill then path.climbstill:blendTime(time) end
@@ -913,6 +801,8 @@ local function blend(paths, time, itemTime)
         if path.spyglassL then path.spyglassL:blendTime(itemTime) end
         if path.hornR then path.hornR:blendTime(itemTime) end
         if path.hornL then path.hornL:blendTime(itemTime) end
+        if path.brushR then path.brushR:blendTime(itemTime) end
+        if path.brushL then path.brushL:blendTime(itemTime) end
         if path.attackR then path.attackR:blendTime(itemTime) end
         if path.attackL then path.attackL:blendTime(itemTime) end
         if path.mineR then path.mineR:blendTime(itemTime) end
@@ -945,8 +835,8 @@ end
 wait(20,function()
    assert(
     next(bbmodels),
-   "§aCustom Script Warning: §4JimmyAnims isn't being required, or a blockbench model isn't being provided to it. \n".."§4 Put this code in a DIFFERENT script to use JimmyAnims: \n".."§flocal anims = require('JimmyAnims') \n"..
-   "§fanims(animations.BBMODEL_NAME_HERE) \n".."§4 Where you replace BBMODEL_NAME_HERE with the name of your bbmodel. \n".."§4 Or go to the top of the script or to the top of the Discord forum for more complete instructions.".."§c") 
+   "§aCustom Script Warning: §6JimmyAnims isn't being required, or a blockbench model isn't being provided to it. \n".."§6 Put this code in a DIFFERENT script to use JimmyAnims: \n".."§flocal anims = require('JimmyAnims') \n"..
+   "§fanims(animations.BBMODEL_NAME_HERE) \n".."§6 Where you replace BBMODEL_NAME_HERE with the name of your bbmodel. \n".."§6 Or go to the top of the script or to the top of the Discord forum for more complete instructions.".."§c") 
 end)
 
 local init = false
@@ -954,6 +844,7 @@ local animMT = {__call = function(self, ...)
     local paths = {...}
     local should_blend = true
     if self.autoBlend ~= nil then should_blend = self.autoBlend end
+    if self.fall ~= nil then fallVel = self.fall end
 
     errors(paths,self.dismiss)
 
@@ -969,29 +860,29 @@ local animMT = {__call = function(self, ...)
     init = true
 end}
 
-local function addAllAnims(...)
+local function addAllAnimsController(...)
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
-            "§aCustom Script Warning: §4addAllAnims was given something that isn't an animation, check its spelling for errors.§c")
+            "§aCustom Script Warning: §6addAllAnimsController was given something that isn't an animation, check its spelling for errors.§c")
       allAnims[#allAnims+1] = v
     end
 end
 
-local function addExcluAnims(...)
+local function addExcluAnimsController(...)
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
-            "§aCustom Script Warning: §4addExcluAnims was given something that isn't an animation, check its spelling for errors.§c")
+            "§aCustom Script Warning: §6addExcluAnimsController was given something that isn't an animation, check its spelling for errors.§c")
       excluAnims[#excluAnims+1] = v
     end
 end
 
-local function addIncluAnims(...)
+local function addIncluAnimsController(...)
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
-            "§aCustom Script Warning: §4addIncluAnims was given something that isn't an animation, check its spelling for errors.§c")
+            "§aCustom Script Warning: §6addIncluAnimsController was given something that isn't an animation, check its spelling for errors.§c")
       incluAnims[#incluAnims+1] = v
     end
 end
@@ -1000,10 +891,9 @@ end
 
 return setmetatable(
     {
-        animsList = animsList,
-        addAllAnims = addAllAnims,
-        addExcluAnims = addExcluAnims,
-        addIncluAnims = addIncluAnims
+        addAllAnimsController = addAllAnimsController,
+        addExcluAnimsController = addExcluAnimsController,
+        addIncluAnimsController = addIncluAnimsController
     },
     animMT
 )
