@@ -1,8 +1,105 @@
 -- + Made by Jimmy Hellp
--- + V5 for 0.1.0 and above
+-- + V5.1 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
+
+local animsList = {
+    -- Exclusive Animations
+idle="idling",
+walk="walking",
+walkback="walking backwards",
+jumpup="jumping up caused via the jump key",
+jumpdown="jumping down after a jump up",
+fall="falling after a while",
+
+sprint = "sprinting",
+sprintjumpup="sprinting and jumping up caused via the jump key",
+sprintjumpdown="sprinting and jumping down after a jump up",
+
+crouch = "crouching",
+crouchwalk = "crouching and walking",
+crouchwalkback = "crouching and walking backwards",
+crouchjumpup = "crouching and jumping up caused via the jump key",
+crouchjumpdown = "crouching and jumping down after a jump up",
+
+elytra = "elytra flying",
+elytradown = "flying down/diving while elytra flying",
+
+trident = "riptide trident lunging",
+sleep = "sleeping",
+swim = "while swimming",
+
+sit = "while in any vehicle or modded sitting",
+sitmove = "while in any vehicle and moving",
+sitmoveback = "while in any vehicle and moving backwards",
+sitjumpup = "while in any vehicle and jumping up",
+sitjumpdown = "while in any vehicle and jumping down",
+sitpass = "while in any vehicle as a passenger",
+
+crawl = "crawling and moving",
+crawlstill = "crawling and still",
+
+fly = "creative flying",
+flywalk = "flying and moving",
+flywalkback = "flying and moving backwards",
+flysprint  = "flying and sprinting",
+flyup = "flying and going up",
+flydown = "flying and going down",
+
+climb = "climbing a ladder",
+climbstill = "not moving on a ladder without crouching (hitting a ceiling usually)",
+climbdown = "going down a ladder",
+climbcrouch = "crouching on a ladder",
+climbcrouchwalk = "crouching on a ladder and moving",
+
+water = "being in water without swimming",
+waterwalk = "in water and moving",
+waterwalkback = "in water and moving backwards",
+waterup = "in water and going up",
+waterdown = "in water and going down",
+watercrouch = "in water and crouching",
+watercrouchwalk = "in water and crouching and walking",
+watercrouchwalkback = "in water and crouching and walking backwards",
+watercrouchdown = "in water and crouching and going down",
+watercrouchup = "in water and crouching and going up. only possible in bubble columns",
+
+hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
+death = "dying",
+
+    -- Inclusive Animations:
+
+attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
+attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
+mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
+mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
+useR = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the right hand",
+useL = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the left hand",
+
+eatR = "eating from the right hand",
+eatL = "eating from the left hand",
+drinkR = "drinking from the right hand",
+drinkL = "drinking from the left hand",
+blockR = "blocking from the right hand",
+blockL = "blocking from the left hand",
+bowR = "drawing back a bow from the right hand",
+bowL = "drawing back a bow from the left hand",
+loadR = "loading a crossbow from the right hand",
+loadL = "loading a crossbow from the left hand",
+crossbowR = "holding a loaded crossbow in the right hand",
+crossbowL = "holding a loaded crossbow in the left hand",
+spearR = "holding up a trident in the right hand",
+spearL = "holding up a trident in the left hand",
+spyglassR = "holding up a spyglass from the right hand",
+spyglassL = "holding up a spyglass from the left hand",
+hornR = "using a horn in the right hand",
+hornL = "using a horn in the left hand",
+brushR = "using a brush in the right hand",
+brushL = "using a brush in the left hand",
+
+holdR = "holding an item in the right hand",
+holdL = "holding an item in the left hand",
+}
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -336,7 +433,7 @@ local function anims()
     local moving = velocity.xz:length() > 0.01
     local sprinty = player:isSprinting()
     local vehicle = player:getVehicle()
-    local sitting = vehicle ~= nil
+    local sitting = vehicle ~= nil or player:getPose() == "SITTING" -- if you're reading this code and see this, "SITTING" isn't a vanilla pose, this is for mods
     local passenger = vehicle and vehicle:getControllingPassenger() ~= player
     local creativeFlying = flying and not sitting
     local pose = player:getPose()
@@ -404,7 +501,6 @@ local function anims()
         rightSwing = player:getSwingArm() == rightActive and not sleeping
         leftSwing = player:getSwingArm() == leftActive and not sleeping
         targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
-        --hitBlock = not (next(player:getTargetedBlock(true,reach):getTextures()) == nil)
         targetBlock = player:getTargetedBlock(true, reach)
         success, result = pcall(targetBlock.getTextures, targetBlock)
         if success then hitBlock = not (next(result) == nil) else hitBlock = true end
@@ -891,6 +987,7 @@ end
 
 return setmetatable(
     {
+        animsList = animsList,
         addAllAnimsController = addAllAnimsController,
         addExcluAnimsController = addExcluAnimsController,
         addIncluAnimsController = addIncluAnimsController
