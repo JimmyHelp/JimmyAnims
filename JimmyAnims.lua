@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V5.1 for 0.1.0 and above
+-- + V5.2 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
@@ -429,14 +429,14 @@ local function anims()
         end
     end
 
+    local pose = player:getPose()
     local velocity = player:getVelocity()
     local moving = velocity.xz:length() > 0.01
     local sprinty = player:isSprinting()
     local vehicle = player:getVehicle()
-    local sitting = vehicle ~= nil or player:getPose() == "SITTING" -- if you're reading this code and see this, "SITTING" isn't a vanilla pose, this is for mods
+    local sitting = vehicle ~= nil or pose == "SITTING" -- if you're reading this code and see this, "SITTING" isn't a vanilla pose, this is for mods
     local passenger = vehicle and vehicle:getControllingPassenger() ~= player
     local creativeFlying = flying and not sitting
-    local pose = player:getPose()
     local standing = pose == "STANDING"
     local crouching = pose == "CROUCHING" and not creativeFlying
     local gliding = pose == "FALL_FLYING"
