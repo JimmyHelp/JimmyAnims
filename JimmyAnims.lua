@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V5.3 for 0.1.0 and above
+-- + V5.2 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
@@ -335,7 +335,6 @@ local function willUse()
         rightPress = x
         if not rightPress then return end
         wait(1,function()
-        log(player:getSwingArm() == rightActive)
         for _, path in pairs(bbmodels) do    
             if path.useR and player:getSwingArm() == rightActive and not sleeping and incluState then
                 path.useR:play()
