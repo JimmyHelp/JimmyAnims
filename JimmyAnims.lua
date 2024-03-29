@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V5.2 for 0.1.0 and above
+-- + V5.3 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
@@ -335,6 +335,7 @@ local function willUse()
         rightPress = x
         if not rightPress then return end
         wait(1,function()
+        log(player:getSwingArm() == rightActive)
         for _, path in pairs(bbmodels) do    
             if path.useR and player:getSwingArm() == rightActive and not sleeping and incluState then
                 path.useR:play()
@@ -602,7 +603,7 @@ local function anims()
     
     local fallState = falling and not gliding and not creativeFlying and not sitting
     
-    local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not gliding and not creativeFlying and not inWater or (fallState and not path.fall)
+    local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not gliding and not creativeFlying and not spin and not inWater or (fallState and not path.fall)
     local jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident)
     local sprintjumpdownState = jumpingDown and sprinting and not creativeFlying and not ladder
     local sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (sprintjumpdownState and not path.sprintjumpdown)
@@ -947,6 +948,13 @@ local animMT = {__call = function(self, ...)
     for _, v in ipairs(paths) do
         bbmodels[#bbmodels+1] = v
     end
+    if #bbmodels >= 64 then
+        error(
+            "§aCustom Script Warning: §6You've reached the max limit of 64 bbmodels that can be added to JimmyAnims. To save your FPS the script has been stopped. \n"..
+            "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
+            ,2
+        )
+    end
 
     -- Init stuff.
     if init then return end
@@ -957,6 +965,13 @@ local animMT = {__call = function(self, ...)
 end}
 
 local function addAllAnimsController(...)
+    if #allAnims >= 1024 then
+        error(
+            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addAllAnimsController. To save your FPS the script has been stopped. \n"..
+            "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
+            ,2
+        )
+    end
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
@@ -966,6 +981,13 @@ local function addAllAnimsController(...)
 end
 
 local function addExcluAnimsController(...)
+    if #excluAnims >= 1024 then
+        error(
+            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addExcluAnimsController. To save your FPS the script has been stopped. \n"..
+            "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
+            ,2
+        )
+    end
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
@@ -975,6 +997,13 @@ local function addExcluAnimsController(...)
 end
 
 local function addIncluAnimsController(...)
+    if #incluAnims >= 1024 then
+        error(
+            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addIncluAnimsController. To save your FPS the script has been stopped. \n"..
+            "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
+            ,2
+        )
+    end
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
