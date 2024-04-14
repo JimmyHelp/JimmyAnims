@@ -1,104 +1,104 @@
 -- + Made by Jimmy Hellp
--- + V5.3 for 0.1.0 and above
+-- + V5.4 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
 
 local animsList = {
     -- Exclusive Animations
-idle="idling",
-walk="walking",
-walkback="walking backwards",
-jumpup="jumping up caused via the jump key",
-jumpdown="jumping down after a jump up",
-fall="falling after a while",
+    idle="idling",
+    walk="walking",
+    walkback="walking backwards",
+    jumpup="jumping up caused via the jump key",
+    jumpdown="jumping down after a jump up",
+    fall="falling after a while",
 
-sprint = "sprinting",
-sprintjumpup="sprinting and jumping up caused via the jump key",
-sprintjumpdown="sprinting and jumping down after a jump up",
+    sprint = "sprinting",
+    sprintjumpup="sprinting and jumping up caused via the jump key",
+    sprintjumpdown="sprinting and jumping down after a jump up",
 
-crouch = "crouching",
-crouchwalk = "crouching and walking",
-crouchwalkback = "crouching and walking backwards",
-crouchjumpup = "crouching and jumping up caused via the jump key",
-crouchjumpdown = "crouching and jumping down after a jump up",
+    crouch = "crouching",
+    crouchwalk = "crouching and walking",
+    crouchwalkback = "crouching and walking backwards",
+    crouchjumpup = "crouching and jumping up caused via the jump key",
+    crouchjumpdown = "crouching and jumping down after a jump up",
 
-elytra = "elytra flying",
-elytradown = "flying down/diving while elytra flying",
+    elytra = "elytra flying",
+    elytradown = "flying down/diving while elytra flying",
 
-trident = "riptide trident lunging",
-sleep = "sleeping",
-swim = "while swimming",
+    trident = "riptide trident lunging",
+    sleep = "sleeping",
+    swim = "while swimming",
 
-sit = "while in any vehicle or modded sitting",
-sitmove = "while in any vehicle and moving",
-sitmoveback = "while in any vehicle and moving backwards",
-sitjumpup = "while in any vehicle and jumping up",
-sitjumpdown = "while in any vehicle and jumping down",
-sitpass = "while in any vehicle as a passenger",
+    sit = "while in any vehicle or modded sitting",
+    sitmove = "while in any vehicle and moving",
+    sitmoveback = "while in any vehicle and moving backwards",
+    sitjumpup = "while in any vehicle and jumping up",
+    sitjumpdown = "while in any vehicle and jumping down",
+    sitpass = "while in any vehicle as a passenger",
 
-crawl = "crawling and moving",
-crawlstill = "crawling and still",
+    crawl = "crawling and moving",
+    crawlstill = "crawling and still",
 
-fly = "creative flying",
-flywalk = "flying and moving",
-flywalkback = "flying and moving backwards",
-flysprint  = "flying and sprinting",
-flyup = "flying and going up",
-flydown = "flying and going down",
+    fly = "creative flying",
+    flywalk = "flying and moving",
+    flywalkback = "flying and moving backwards",
+    flysprint  = "flying and sprinting",
+    flyup = "flying and going up",
+    flydown = "flying and going down",
 
-climb = "climbing a ladder",
-climbstill = "not moving on a ladder without crouching (hitting a ceiling usually)",
-climbdown = "going down a ladder",
-climbcrouch = "crouching on a ladder",
-climbcrouchwalk = "crouching on a ladder and moving",
+    climb = "climbing a ladder",
+    climbstill = "not moving on a ladder without crouching (hitting a ceiling usually)",
+    climbdown = "going down a ladder",
+    climbcrouch = "crouching on a ladder",
+    climbcrouchwalk = "crouching on a ladder and moving",
 
-water = "being in water without swimming",
-waterwalk = "in water and moving",
-waterwalkback = "in water and moving backwards",
-waterup = "in water and going up",
-waterdown = "in water and going down",
-watercrouch = "in water and crouching",
-watercrouchwalk = "in water and crouching and walking",
-watercrouchwalkback = "in water and crouching and walking backwards",
-watercrouchdown = "in water and crouching and going down",
-watercrouchup = "in water and crouching and going up. only possible in bubble columns",
+    water = "being in water without swimming",
+    waterwalk = "in water and moving",
+    waterwalkback = "in water and moving backwards",
+    waterup = "in water and going up",
+    waterdown = "in water and going down",
+    watercrouch = "in water and crouching",
+    watercrouchwalk = "in water and crouching and walking",
+    watercrouchwalkback = "in water and crouching and walking backwards",
+    watercrouchdown = "in water and crouching and going down",
+    watercrouchup = "in water and crouching and going up. only possible in bubble columns",
 
-hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
-death = "dying",
+    hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
+    death = "dying",
 
     -- Inclusive Animations:
 
-attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
-attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
-mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
-mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
-useR = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the right hand",
-useL = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the left hand",
+    attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
+    attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
+    mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
+    mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
+    useR = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the right hand",
+    useL = "MUST BE IN PLAY ONCE LOOP MODE. placing blocks/using items/interacting with blocks/mobs/etc with the left hand",
 
-eatR = "eating from the right hand",
-eatL = "eating from the left hand",
-drinkR = "drinking from the right hand",
-drinkL = "drinking from the left hand",
-blockR = "blocking from the right hand",
-blockL = "blocking from the left hand",
-bowR = "drawing back a bow from the right hand",
-bowL = "drawing back a bow from the left hand",
-loadR = "loading a crossbow from the right hand",
-loadL = "loading a crossbow from the left hand",
-crossbowR = "holding a loaded crossbow in the right hand",
-crossbowL = "holding a loaded crossbow in the left hand",
-spearR = "holding up a trident in the right hand",
-spearL = "holding up a trident in the left hand",
-spyglassR = "holding up a spyglass from the right hand",
-spyglassL = "holding up a spyglass from the left hand",
-hornR = "using a horn in the right hand",
-hornL = "using a horn in the left hand",
-brushR = "using a brush in the right hand",
-brushL = "using a brush in the left hand",
+    eatR = "eating from the right hand",
+    eatL = "eating from the left hand",
+    drinkR = "drinking from the right hand",
+    drinkL = "drinking from the left hand",
+    blockR = "blocking from the right hand",
+    blockL = "blocking from the left hand",
+    bowR = "drawing back a bow from the right hand",
+    bowL = "drawing back a bow from the left hand",
+    loadR = "loading a crossbow from the right hand",
+    loadL = "loading a crossbow from the left hand",
+    crossbowR = "holding a loaded crossbow in the right hand",
+    crossbowL = "holding a loaded crossbow in the left hand",
+    spearR = "holding up a trident in the right hand",
+    spearL = "holding up a trident in the left hand",
+    spyglassR = "holding up a spyglass from the right hand",
+    spyglassL = "holding up a spyglass from the left hand",
+    hornR = "using a horn in the right hand",
+    hornL = "using a horn in the left hand",
+    brushR = "using a brush in the right hand",
+    brushL = "using a brush in the left hand",
 
-holdR = "holding an item in the right hand",
-holdL = "holding an item in the left hand",
+    holdR = "holding an item in the right hand",
+    holdL = "holding an item in the left hand",
 }
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -121,6 +121,10 @@ local function errors(paths,dismiss)
     end
 end
 
+local setAllOnVar = true
+local setIncluOnVar = true
+local setExcluOnVar = true
+
 local allAnims = {}
 local excluAnims = {}
 local incluAnims = {}
@@ -140,6 +144,7 @@ local mineRanims = {}
 local mineLanims = {}
 
 local hasJumped = false
+local oneJump = false
 
 local sleeping
 
@@ -362,16 +367,23 @@ local function anims()
             animsTable.allVar = true
             break
         else
-            animsTable.allVar = false
+            animsTable.allVar = false or not setAllOnVar
         end
     end
+    if next(allAnims) == nil then
+        animsTable.allVar = not setAllOnVar
+    end
+
     for _, value in ipairs(excluAnims) do
         if value:isPlaying() then
             animsTable.excluVar = true
             break
         else
-            animsTable.excluVar = false
+            animsTable.excluVar = false or not setExcluOnVar
         end
+    end
+    if next(excluAnims) == nil then
+        animsTable.excluVar = not setExcluOnVar
     end
 
     for _, value in ipairs(incluAnims) do
@@ -379,8 +391,11 @@ local function anims()
             animsTable.incluVar = true
             break
         else
-            animsTable.incluVar = false
+            animsTable.incluVar = false or not setIncluOnVar
         end
+    end
+    if next(incluAnims) == nil then
+        animsTable.incluVar = not setIncluOnVar
     end
 
     excluState = not animsTable.allVar and not animsTable.excluVar
@@ -595,19 +610,19 @@ local function anims()
     local climbState = ladder and goingUp and not crouching or (climbdownState and not path.climbdown) or (climbstillState and not path.climbstill)
 
     local crouchjumpdownState = crouching and jumpingDown and not ladder and not inWater
-    local crouchjumpupState = crouching and jumpingUp and not ladder or (crouchjumpdownState and not path.crouchjumpdown)
+    local crouchjumpupState = crouching and jumpingUp and not ladder or (not oneJump and (crouchjumpdownState and not path.crouchjumpdown))
     local crouchwalkbackState = backward and crouching and not ladder and not inWater or (watercrouchwalkbackState and not path.watercrouchwalkback and not path.watercrouchwalk and not path.watercrouch)
-    local crouchwalkState = forward and crouching and not ladder and not inWater or (crouchwalkbackState and not path.crouchwalkback) or (crouchjumpupState and not path.crouchjumpup) or ((watercrouchwalkState and not watercrouchwalkbackState) and not path.watercrouchwalk and not path.watercrouch)
+    local crouchwalkState = forward and crouching and not ladder and not inWater or (crouchwalkbackState and not path.crouchwalkback) or (not oneJump and (crouchjumpupState and not path.crouchjumpup)) or ((watercrouchwalkState and not watercrouchwalkbackState) and not path.watercrouchwalk and not path.watercrouch)
     local crouchState = crouching and not walking and not isJumping and not ladder and not inWater and not cooldown or (crouchwalkState and not path.crouchwalk) or (climbcrouchState and not path.climbcrouch) or ((watercrouchState and not watercrouchwalkState) and not path.watercrouch)
     
     local fallState = falling and not gliding and not creativeFlying and not sitting
     
-    local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not gliding and not creativeFlying and not spin and not inWater or (fallState and not path.fall)
-    local jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident)
     local sprintjumpdownState = jumpingDown and sprinting and not creativeFlying and not ladder
-    local sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (sprintjumpdownState and not path.sprintjumpdown)
+    local sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (not oneJump and (sprintjumpdownState and not path.sprintjumpdown))
+    local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not gliding and not creativeFlying and not spin and not inWater or (fallState and not path.fall) or (oneJump and (sprintjumpdownState and not path.sprintjumpdown)) or (oneJump and (crouchjumpdownState and not path.crouchjumpdown))
+    local jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident) or (oneJump and (sprintjumpupState and not path.sprintjumpup)) or (oneJump and (crouchjumpupState and not path.crouchjumpup))
 
-    local sprintState = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown or (sprintjumpupState and not path.sprintjumpup)
+    local sprintState = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown or (not oneJump and (sprintjumpupState and not path.sprintjumpup))
     local walkbackState = backward and standing and not creativeFlying and not ladder and not inWater or (flywalkbackState and not path.flywalkback and not path.flywalk and not path.fly)
     local walkState = forward and standing and not creativeFlying and not ladder and not inWater and not cooldown or (walkbackState and not path.walkback) or (sprintState and not path.sprint) or (climbState and not path.climb) 
     or (swimState and not path.swim) or (elytraState and not path.elytra) or (jumpupState and not path.jumpup) or (waterwalkState and (not path.waterwalk and not path.water)) or ((flywalkState and not flywalkbackState) and not path.flywalk and not path.fly)
@@ -1011,6 +1026,22 @@ local function addIncluAnimsController(...)
     end
 end
 
+local function setAllOn(x)
+    setAllOnVar = x
+end
+
+local function setExcluOn(x)
+    setExcluOnVar = x
+end
+
+local function setIncluOn(x)
+    setIncluOnVar = x
+end
+
+local function oneJumpFunc(x)
+    oneJump = x
+end
+
 -- If you're choosing to edit this script, don't put anything beneath the return line
 
 return setmetatable(
@@ -1018,7 +1049,11 @@ return setmetatable(
         animsList = animsList,
         addAllAnimsController = addAllAnimsController,
         addExcluAnimsController = addExcluAnimsController,
-        addIncluAnimsController = addIncluAnimsController
+        addIncluAnimsController = addIncluAnimsController,
+        setAllOn = setAllOn,
+        setExcluOn = setExcluOn,
+        setIncluOn = setIncluOn,
+        oneJump = oneJumpFunc,
     },
     animMT
 )
