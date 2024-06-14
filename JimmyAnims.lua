@@ -1,5 +1,5 @@
 -- + Made by Jimmy Hellp
--- + V6 for 0.1.0 and above
+-- + V6.1 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
@@ -145,6 +145,8 @@ local hasJumped = false
 local oneJump = false
 
 local hitBlock
+local rightResult
+local leftResult
 
 local cFlying = false
 local oldcFlying = cFlying
@@ -365,16 +367,20 @@ local function anims()
     local targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
     local targetBlock = player:getTargetedBlock(true, reach)
     local swingTime = player:getSwingTime() == 1
-    local success, result = pcall(targetBlock.getTextures, targetBlock)
-    if success then hitBlock = not (next(result) == nil) else hitBlock = true end
+    local blockSuccess, blockResult = pcall(targetBlock.getTextures, targetBlock)
+    if blockSuccess then hitBlock = not (next(blockResult) == nil) else hitBlock = true end
     local rightMine = rightSwing and hitBlock and not targetEntity
     local leftMine = leftSwing and hitBlock and not targetEntity
     local rightAttack = rightSwing and (not hitBlock or targetEntity)
     local leftAttack = leftSwing and (not hitBlock or targetEntity)
     local rightItem = player:getHeldItem(handedness)
     local leftItem = player:getHeldItem(not handedness)
-    local usingR = activeness == rightActive and rightItem:getUseAction()
-    local usingL = activeness == leftActive and leftItem:getUseAction()
+    local rightSuccess = pcall(rightItem.getUseAction,rightItem)
+    if rightSuccess then rightResult = rightItem:getUseAction() else rightResult = "NONE" end
+    local usingR = activeness == rightActive and rightResult
+    local leftSuccess = pcall(leftItem.getUseAction,leftItem)
+    if leftSuccess then leftResult = leftItem:getUseAction() else leftResult = "NONE" end
+    local usingL = activeness == leftActive and leftResult
 
     local crossR = rightItem.tag and rightItem.tag["Charged"] == 1
     local crossL = leftItem.tag and leftItem.tag["Charged"] == 1
