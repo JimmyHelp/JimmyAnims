@@ -1,105 +1,106 @@
 -- + Made by Jimmy Hellp
--- + V6.1 for 0.1.0 and above
+-- + V7 for 0.1.0 and above
 -- + Thank you GrandpaScout for helping with the library stuff!
 -- + Automatically compatible with GSAnimBlend for automatic smooth animation blending
 -- + Also includes Manuel's Run Later script
 
-local animsList = {
-    -- Exclusive Animations
-    idle="idling",
-    walk="walking",
-    walkback="walking backwards",
-    jumpup="jumping up caused via the jump key",
-    jumpdown="jumping down after a jump up",
-    fall="falling after a while",
-
-    sprint = "sprinting",
-    sprintjumpup="sprinting and jumping up caused via the jump key",
-    sprintjumpdown="sprinting and jumping down after a jump up",
-
-    crouch = "crouching",
-    crouchwalk = "crouching and walking",
-    crouchwalkback = "crouching and walking backwards",
-    crouchjumpup = "crouching and jumping up caused via the jump key",
-    crouchjumpdown = "crouching and jumping down after a jump up",
-
-    elytra = "elytra flying",
-    elytradown = "flying down/diving while elytra flying",
-
-    trident = "riptide trident lunging",
-    sleep = "sleeping",
-    swim = "while swimming",
-
-    sit = "while in any vehicle or modded sitting",
-    sitmove = "while in any vehicle and moving",
-    sitmoveback = "while in any vehicle and moving backwards",
-    sitjumpup = "while in any vehicle and jumping up",
-    sitjumpdown = "while in any vehicle and jumping down",
-    sitpass = "while in any vehicle as a passenger",
-
-    crawl = "crawling and moving",
-    crawlstill = "crawling and still",
-
-    fly = "creative flying",
-    flywalk = "flying and moving",
-    flywalkback = "flying and moving backwards",
-    flysprint  = "flying and sprinting",
-    flyup = "flying and going up",
-    flydown = "flying and going down",
-
-    climb = "climbing a ladder",
-    climbstill = "not moving on a ladder without crouching (hitting a ceiling usually)",
-    climbdown = "going down a ladder",
-    climbcrouch = "crouching on a ladder",
-    climbcrouchwalk = "crouching on a ladder and moving",
-
-    water = "being in water without swimming",
-    waterwalk = "in water and moving",
-    waterwalkback = "in water and moving backwards",
-    waterup = "in water and going up",
-    waterdown = "in water and going down",
-    watercrouch = "in water and crouching",
-    watercrouchwalk = "in water and crouching and walking",
-    watercrouchwalkback = "in water and crouching and walking backwards",
-    watercrouchdown = "in water and crouching and going down",
-    watercrouchup = "in water and crouching and going up. only possible in bubble columns",
-
-    hurt = "MUST BE IN PLAY ONCE LOOP MODE. when hurt",
-    death = "dying",
-
-    -- Inclusive Animations:
-
-    attackR = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand",
-    attackL = "MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand",
-    mineR = "MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand",
-    mineL = "MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand",
-
-    eatR = "eating from the right hand",
-    eatL = "eating from the left hand",
-    drinkR = "drinking from the right hand",
-    drinkL = "drinking from the left hand",
-    blockR = "blocking from the right hand",
-    blockL = "blocking from the left hand",
-    bowR = "drawing back a bow from the right hand",
-    bowL = "drawing back a bow from the left hand",
-    loadR = "loading a crossbow from the right hand",
-    loadL = "loading a crossbow from the left hand",
-    crossbowR = "holding a loaded crossbow in the right hand",
-    crossbowL = "holding a loaded crossbow in the left hand",
-    spearR = "holding up a trident in the right hand",
-    spearL = "holding up a trident in the left hand",
-    spyglassR = "holding up a spyglass from the right hand",
-    spyglassL = "holding up a spyglass from the left hand",
-    hornR = "using a horn in the right hand",
-    hornL = "using a horn in the left hand",
-    brushR = "using a brush in the right hand",
-    brushL = "using a brush in the left hand",
-
-    holdR = "holding an item in the right hand",
-    holdL = "holding an item in the left hand",
-}
-
 ------------------------------------------------------------------------------------------------------------------------
+
+local animsList = {
+    exclu = {    
+        "idle", -- idling
+        "walk", -- walking
+        "walkback", -- walking backwards
+
+        "jumpup", -- jumping up caused via the jump key
+        "jumpdown", -- jumping down after a jump up
+        "fall", -- falling after a while
+
+        "sprint", -- sprinting
+        "sprintjumpup", -- sprinting and jumping up caused via the jump key
+        "sprintjumpdown", -- sprinting and jumping down after a jump up
+
+        "crouch", -- crouching
+        "crouchwalk", -- crouching and walking
+        "crouchwalkback", -- crouching and walking backwards
+        "crouchjumpup", -- crouching and jumping up caused via the jump key
+        "crouchjumpdown", -- crouching and jumping down after a jump up
+
+        "elytra", -- elytra flying
+        "elytradown", -- flying down/diving while elytra flying
+
+        "trident",-- riptide trident lunging
+        "sleep", -- sleeping
+        "swim", -- while swimming
+
+        "sit", -- while in any vehicle or modded sitting
+        "sitmove", -- while in any vehicle and moving
+        "sitmoveback", -- while in any vehicle and moving backwards
+        "sitjumpup", -- while in any vehicle and jumping up
+        "sitjumpdown", -- while in any vehicle and jumping down
+        "sitpass", -- while in any vehicle as a passenger
+
+        "crawl", -- crawling and moving
+        "crawlstill", -- crawling and still
+
+        "fly", -- creative flying
+        "flywalk", -- flying and moving
+        "flywalkback", -- flying and moving backwards
+        "flysprint",  -- flying and sprinting
+        "flyup", -- flying and going up
+        "flydown", -- flying and going down
+
+        "climb", -- climbing a ladder
+        "climbstill", -- not moving on a ladder without crouching (hitting a ceiling usually)
+        "climbdown", -- going down a ladder
+        "climbcrouch", -- crouching on a ladder
+        "climbcrouchwalk", -- crouching on a ladder and moving
+
+        "water", -- being in water without swimming
+        "waterwalk", -- in water and moving
+        "waterwalkback", -- in water and moving backwards
+        "waterup", -- in water and going up
+        "waterdown", -- in water and going down
+        "watercrouch", -- in water and crouching
+        "watercrouchwalk", -- in water and crouching and walking
+        "watercrouchwalkback", -- in water and crouching and walking backwards
+        "watercrouchdown", -- in water and crouching and going down
+        "watercrouchup", -- in water and crouching and going up. only possible in bubble columns
+
+        "hurt", -- MUST BE IN PLAY ONCE LOOP MODE. when hurt
+        "death", -- dying
+    },
+    inclu = {
+        "attackR", -- MUST BE IN PLAY ONCE LOOP MODE. attacking with the right hand
+        "attackL", -- MUST BE IN PLAY ONCE LOOP MODE. attacking with the left hand
+        "mineR", -- MUST BE IN PLAY ONCE LOOP MODE. mining with the right hand
+        "mineL", -- MUST BE IN PLAY ONCE LOOP MODE. mining with the left hand
+
+        "eatR", -- eating from the right hand
+        "eatL", -- eating from the left hand
+        "drinkR", -- drinking from the right hand
+        "drinkL", -- drinking from the left hand
+        "blockR", -- blocking from the right hand
+        "blockL", -- blocking from the left hand
+        "bowR", -- drawing back a bow from the right hand
+        "bowL", -- drawing back a bow from the left hand
+        "loadR", -- loading a crossbow from the right hand
+        "loadL", -- loading a crossbow from the left hand
+        "crossbowR", -- holding a loaded crossbow in the right hand
+        "crossbowL", -- holding a loaded crossbow in the left hand
+        "spearR", -- holding up a trident in the right hand
+        "spearL", -- holding up a trident in the left hand
+        "spyglassR", -- holding up a spyglass from the right hand
+        "spyglassL", -- holding up a spyglass from the left hand
+        "hornR", -- using a horn in the right hand
+        "hornL", -- using a horn in the left hand
+        "brushR", -- using a brush in the right hand
+        "brushL", -- using a brush in the left hand
+
+        "holdR", -- holding an item in the right hand
+        "holdL" -- holding an item in the left hand
+    }
+}
 
 local function errors(paths,dismiss)
     assert(
@@ -108,12 +109,14 @@ local function errors(paths,dismiss)
         .."§f logTable(animations.BBMODEL_NAME_HERE) \n ".."§6If this returns nil your bbmodel name is wrong or it has no animations. You can use \n".."§f logTable(models:getChildren()) \n".."§6 to get the name of every bbmodel in your avatar.§c"
     )
 
+    if type(paths[1])=="ModelPart" then error("You need to do animations.BBMODEL_NAME not models.BBMODEL_NAME",3) end
+
     for _, path in pairs(paths) do
         for _, anim in pairs(path) do
             if anim:getName():find("%.") and not dismiss then
                 error(
                     "§aCustom Script Warning: §6The animation §b'"..anim:getName().."'§6 has a period ( . ) in its name, the handler can't use that animation and it must be renamed to fit the handler's accepted animation names. \n" ..
-                " If the animation isn't meant for the handler, you can dismiss this error by adding §fanims.dismiss = true§6 after the require but before setting the bbmodel.§c")
+                " If the animation isn't meant for the handler, you can dismiss this error by adding §fanims.dismiss = true§6 after the require but before setting the bbmodel.§c",3)
             end
         end
     end
@@ -144,7 +147,6 @@ local mineLanims = {}
 local hasJumped = false
 local oneJump = false
 
-local hitBlock
 local rightResult
 local leftResult
 
@@ -167,22 +169,32 @@ local oldgrounded
 
 local fallVel = -0.6
 
--- wait code from Manuel
-local timers = {}
+local targetBlock
+local hitBlock
+local blockSuccess
+local blockResult
+local oldhitBlock
 
+---- Run Later by manuel_2867 ----
+local tmrs={}
+local t=0
+---Schedules a function to run after a certain amount of ticks
+---@param ticks number|function Amount of ticks to wait, or a predicate function to check each tick until it returns true
+---@param next function Function to run after amount of ticks, or after the predicate function returned true
 local function wait(ticks,next)
-    table.insert(timers,{t=world.getTime()+ticks,n=next})
+    local x=type(ticks)=="number"
+    table.insert(tmrs,{t=x and t+ticks,p=x and function()end or ticks,n=next})
 end
-
-events.TICK:register(function()
-    for key,timer in pairs(timers) do
-        if world.getTime() >= timer.t then
+function events.TICK()
+    t=t+1
+    for key,timer in pairs(tmrs) do
+        if timer.p()or(timer.t and t >= timer.t)then
             timer.n()
-            timers[key] = nil
+            tmrs[key]=nil
         end
     end
-end)
---
+end
+----
 
 local bbmodels = {} -- don't put things in here
 
@@ -211,7 +223,8 @@ end
 
 local function anims()
     for _, value in ipairs(allAnims) do
-        if value:isPlaying() then
+        local exists, hold = pcall(value.isHolding,value)
+        if value:isPlaying() or (exists and hold) then
             animsTable.allVar = true
             break
         else
@@ -223,7 +236,8 @@ local function anims()
     end
 
     for _, value in ipairs(excluAnims) do
-        if value:isPlaying() then
+        local exists, hold = pcall(value.isHolding,value)
+        if value:isPlaying() or (exists and hold) then
             animsTable.excluVar = true
             break
         else
@@ -235,7 +249,8 @@ local function anims()
     end
 
     for _, value in ipairs(incluAnims) do
-        if value:isPlaying() then
+        local exists, hold = pcall(value.isHolding,value)
+        if value:isPlaying() or (exists and hold) then
             animsTable.incluVar = true
             break
         else
@@ -364,15 +379,12 @@ local function anims()
     local using = player:isUsingItem()
     local rightSwing = player:getSwingArm() == rightActive and not sleeping
     local leftSwing = player:getSwingArm() == leftActive and not sleeping
-    local targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
-    local targetBlock = player:getTargetedBlock(true, reach)
     local swingTime = player:getSwingTime() == 1
-    local blockSuccess, blockResult = pcall(targetBlock.getTextures, targetBlock)
-    if blockSuccess then hitBlock = not (next(blockResult) == nil) else hitBlock = true end
-    local rightMine = rightSwing and hitBlock and not targetEntity
-    local leftMine = leftSwing and hitBlock and not targetEntity
-    local rightAttack = rightSwing and (not hitBlock or targetEntity)
-    local leftAttack = leftSwing and (not hitBlock or targetEntity)
+    local targetEntity = type(player:getTargetedEntity()) == "PlayerAPI" or type(player:getTargetedEntity()) == "LivingEntityAPI"
+    local rightMine = rightSwing and oldhitBlock and not targetEntity
+    local leftMine = leftSwing and oldhitBlock and not targetEntity
+    local rightAttack = rightSwing and (not oldhitBlock or targetEntity)
+    local leftAttack = leftSwing and (not oldhitBlock or targetEntity)
     local rightItem = player:getHeldItem(handedness)
     local leftItem = player:getHeldItem(not handedness)
     local rightSuccess = pcall(rightItem.getUseAction,rightItem)
@@ -381,9 +393,11 @@ local function anims()
     local leftSuccess = pcall(leftItem.getUseAction,leftItem)
     if leftSuccess then leftResult = leftItem:getUseAction() else leftResult = "NONE" end
     local usingL = activeness == leftActive and leftResult
+    local rTag= rightItem.tag
+    local lTag = leftItem.tag
 
-    local crossR = rightItem.tag and rightItem.tag["Charged"] == 1
-    local crossL = leftItem.tag and leftItem.tag["Charged"] == 1
+    local crossR = rTag and (rTag["Charged"] == 1 or (rTag["ChargedProjectiles"] and next(rTag["ChargedProjectiles"])~= nil))
+    local crossL = lTag and (lTag["Charged"] == 1 or (lTag["ChargedProjectiles"] and next(lTag["ChargedProjectiles"])~= nil))
 
     local drinkRState = using and usingR == "DRINK"
     local drinkLState = using and usingL == "DRINK"
@@ -474,14 +488,14 @@ local function anims()
         
         local sprintjumpdownState = jumpingDown and sprinting and not creativeFlying and not ladder
         local sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (not oneJump and (sprintjumpdownState and not path.sprintjumpdown))
-        local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not gliding and not creativeFlying and not spin and not inWater or (fallState and not path.fall) or (oneJump and (sprintjumpdownState and not path.sprintjumpdown)) or (oneJump and (crouchjumpdownState and not path.crouchjumpdown))
+        local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (fallState and not path.fall) or (oneJump and (sprintjumpdownState and not path.sprintjumpdown)) or (oneJump and (crouchjumpdownState and not path.crouchjumpdown))
         local jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident) or (oneJump and (sprintjumpupState and not path.sprintjumpup)) or (oneJump and (crouchjumpupState and not path.crouchjumpup))
 
         local sprintState = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown or (not oneJump and (sprintjumpupState and not path.sprintjumpup))
         local walkbackState = backward and standing and not creativeFlying and not ladder and not inWater or (flywalkbackState and not path.flywalkback and not path.flywalk and not path.fly)
         local walkState = forward and standing and not creativeFlying and not ladder and not inWater and not cooldown or (walkbackState and not path.walkback) or (sprintState and not path.sprint) or (climbState and not path.climb) 
         or (swimState and not path.swim) or (elytraState and not path.elytra) or (jumpupState and not path.jumpup) or (waterwalkState and (not path.waterwalk and not path.water)) or ((flywalkState and not flywalkbackState) and not path.flywalk and not path.fly)
-        or (crouchwalkState and not path.crouch)
+        or (crouchwalkState and not (path.crouchwalk or path.crouch))
         local idleState = not moving and not sprinting and standing and not isJumping and not sitting and not creativeFlying and not ladder and not inWater or (sleepState and not path.sleep) or (sitState and not path.sit)
         or ((waterState and not waterwalkState) and not path.water) or ((flyState and not flywalkState) and not path.fly) or ((crouchState and not crouchwalkState) and not path.crouch)
 
@@ -647,7 +661,8 @@ local function anims()
         elseif value:getName():find("Name_") then
             value:setPlaying(rightItem:getName():find(value:getName():gsub("_holdR",""):gsub("Name_","")) and incluState and exclude)
         end
-        if value:isPlaying() then
+        local exists, hold = pcall(value.isHolding,value)
+        if value:isPlaying() or (exists and hold) then
             for _, path in pairs(bbmodels) do
                 if path.holdR then path.holdR:stop() end
             end
@@ -660,12 +675,17 @@ local function anims()
         elseif value:getName():find("Name_") then
             value:setPlaying(leftItem:getName():find(value:getName():gsub("_holdL",""):gsub("Name_","")) and incluState and exclude)
         end
-        if value:isPlaying() then
+        local exists, hold = pcall(value.isHolding,value)
+        if value:isPlaying() or (exists and hold) then
             for _, path in pairs(bbmodels) do
                 if path.holdL then path.holdL:stop() end
             end
         end
     end
+    oldhitBlock = hitBlock
+    targetBlock = player:getTargetedBlock(true, reach)
+    blockSuccess, blockResult = pcall(targetBlock.getTextures, targetBlock)
+    if blockSuccess then hitBlock = not (next(blockResult) == nil) else hitBlock = true end
 end
 
 local attackinit = true
@@ -716,84 +736,20 @@ if GSAnimBlend then GSAnimBlend.safe = false end
 
 local function blend(paths, time, itemTime)
     if not GSAnimBlend then return end
-    for _, path in pairs(paths) do
-        if path.walk then path.walk:blendTime(time) end
-        if path.idle then path.idle:blendTime(time) end
-        if path.crouch then path.crouch:blendTime(time) end
-        if path.walkback then path.walkback:blendTime(time) end
-        if path.sprint then path.sprint:blendTime(time) end
-        if path.crouchwalk then path.crouchwalk:blendTime(time) end
-        if path.crouchwalkback then path.crouchwalkback:blendTime(time) end
-        if path.elytra then path.elytra:blendTime(time) end
-        if path.elytradown then path.elytradown:blendTime(time) end
-        if path.fly then path.fly:blendTime(time) end
-        if path.flywalk then path.flywalk:blendTime(time) end
-        if path.flywalkback then path.flywalkback:blendTime(time) end
-        if path.flysprint then path.flysprint:blendTime(time) end
-        if path.flyup then path.flyup:blendTime(time) end
-        if path.flydown then path.flydown:blendTime(time) end
-        if path.sit then path.sit:blendTime(time) end
-        if path.sitmove then path.sitmove:blendTime(time) end
-        if path.sitmoveback then path.sitmoveback:blendTime(time) end
-        if path.sitjumpup then path.sitjumpup:blendTime(time) end
-        if path.sitjumpdown then path.sitjumpdown:blendTime(time) end
-        if path.sitpass then path.sitpass:blendTime(time) end
-        if path.sleep then path.sleep:blendTime(time) end
-        if path.climb then path.climb:blendTime(time) end
-        if path.climbstill then path.climbstill:blendTime(time) end
-        if path.climbdown then path.climbdown:blendTime(time) end
-        if path.climbcrouch then path.climbcrouch:blendTime(time) end
-        if path.climbcrouchwalk then path.climbcrouchwalk:blendTime(time) end
-        if path.swim then path.swim:blendTime(time) end
-        if path.crawl then path.crawl:blendTime(time) end
-        if path.crawlstill then path.crawlstill:blendTime(time) end
-        if path.fall then path.fall:blendTime(time) end
-        if path.jumpup then path.jumpup:blendTime(time) end
-        if path.jumpdown then path.jumpdown:blendTime(time) end
-        if path.sprintjumpup then path.sprintjumpup:blendTime(time) end
-        if path.sprintjumpdown then path.sprintjumpdown:blendTime(time) end
-        if path.crouchjumpup then path.crouchjumpup:blendTime(time) end
-        if path.crouchjumpdown then path.crouchjumpdown:blendTime(time) end
-        if path.trident then path.trident:blendTime(time) end
-        if path.death then path.death:blendTime(time) end
-        if path.water then path.water:blendTime(time) end
-        if path.waterwalk then path.waterwalk:blendTime(time) end
-        if path.waterwalkback then path.waterwalkback:blendTime(time) end
-        if path.waterup then path.waterup:blendTime(time) end
-        if path.waterdown then path.waterdown:blendTime(time) end
-        if path.watercrouch then path.watercrouch:blendTime(time) end
-        if path.watercrouchwalk then path.watercrouchwalk:blendTime(time) end
-        if path.watercrouchwakback then path.watercrouchwakback:blendTime(time) end
-        if path.watercrouchdown then path.watercrouchdown:blendTime(time) end
-        if path.watercrouchup then path.watercrouchup:blendTime(time) end
 
-        if path.eatR then path.eatR:blendTime(itemTime) end
-        if path.eatL then path.eatL:blendTime(itemTime) end
-        if path.drinkR then path.drinkR:blendTime(itemTime) end
-        if path.drinkL then path.drinkL:blendTime(itemTime) end
-        if path.blockR then path.blockR:blendTime(itemTime) end
-        if path.blockL then path.blockL:blendTime(itemTime) end
-        if path.bowR then path.bowR:blendTime(itemTime) end
-        if path.bowL then path.bowL:blendTime(itemTime) end
-        if path.crossbowR then path.crossbowR:blendTime(itemTime) end
-        if path.crossbowL then path.crossbowL:blendTime(itemTime) end
-        if path.loadR then path.loadR:blendTime(itemTime) end
-        if path.loadL then path.loadL:blendTime(itemTime) end
-        if path.spearR then path.spearR:blendTime(itemTime) end
-        if path.spearL then path.spearL:blendTime(itemTime) end
-        if path.spyglassR then path.spyglassR:blendTime(itemTime) end
-        if path.spyglassL then path.spyglassL:blendTime(itemTime) end
-        if path.hornR then path.hornR:blendTime(itemTime) end
-        if path.hornL then path.hornL:blendTime(itemTime) end
-        if path.brushR then path.brushR:blendTime(itemTime) end
-        if path.brushL then path.brushL:blendTime(itemTime) end
-        if path.attackR then path.attackR:blendTime(itemTime) end
-        if path.attackL then path.attackL:blendTime(itemTime) end
-        if path.mineR then path.mineR:blendTime(itemTime) end
-        if path.mineL then path.mineL:blendTime(itemTime) end
-        if path.holdR then path.holdR:blendTime(itemTime) end
-        if path.holdL then path.holdL:blendTime(itemTime) end
-    end
+    for _, path in pairs(paths) do
+        for _,name in pairs(animsList.exclu) do
+           if path[name] then 
+              path[name]:blendTime(time)
+           end
+        end
+        for _,name in pairs(animsList.inclu) do
+            if path[name] then 
+               path[name]:blendTime(itemTime)
+            end
+         end
+     end
+
     for _,value in pairs(holdRanims) do
         value:blendTime(itemTime)
     end
@@ -849,10 +805,10 @@ local animMT = {__call = function(self, ...)
     init = true
 end}
 
-local function addAllAnimsController(...)
+local function addAllOverrider(...)
     if #allAnims >= 1024 then
         error(
-            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addAllAnimsController. To save your FPS the script has been stopped. \n"..
+            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addAllOverrider. To save your FPS the script has been stopped. \n"..
             "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
             ,2
         )
@@ -860,15 +816,15 @@ local function addAllAnimsController(...)
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
-            "§aCustom Script Warning: §6addAllAnimsController was given something that isn't an animation, check its spelling for errors.§c")
+            "§aCustom Script Warning: §6addAllOverrider was given something that isn't an animation, check its spelling for errors.§c")
       allAnims[#allAnims+1] = v
     end
 end
 
-local function addExcluAnimsController(...)
+local function addExcluOverrider(...)
     if #excluAnims >= 1024 then
         error(
-            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addExcluAnimsController. To save your FPS the script has been stopped. \n"..
+            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addExcluOverrider. To save your FPS the script has been stopped. \n"..
             "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
             ,2
         )
@@ -876,15 +832,15 @@ local function addExcluAnimsController(...)
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
-            "§aCustom Script Warning: §6addExcluAnimsController was given something that isn't an animation, check its spelling for errors.§c")
+            "§aCustom Script Warning: §6addExcluOverrider was given something that isn't an animation, check its spelling for errors.§c")
       excluAnims[#excluAnims+1] = v
     end
 end
 
-local function addIncluAnimsController(...)
+local function addIncluOverrider(...)
     if #incluAnims >= 1024 then
         error(
-            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addIncluAnimsController. To save your FPS the script has been stopped. \n"..
+            "§aCustom Script Warning: §6You've reached the max limit of 1024 animations that can be added to the addIncluOverrider. To save your FPS the script has been stopped. \n"..
             "To prevent this from happening accidentally you should move the function call out of any function it is in.§c"
             ,2
         )
@@ -892,7 +848,7 @@ local function addIncluAnimsController(...)
     for _, v in ipairs{...} do
         assert(
             type(v) == "Animation",
-            "§aCustom Script Warning: §6addIncluAnimsController was given something that isn't an animation, check its spelling for errors.§c")
+            "§aCustom Script Warning: §6addIncluOverrider was given something that isn't an animation, check its spelling for errors.§c")
       incluAnims[#incluAnims+1] = v
     end
 end
@@ -918,9 +874,9 @@ end
 return setmetatable(
     {
         animsList = animsList,
-        addAllAnimsController = addAllAnimsController,
-        addExcluAnimsController = addExcluAnimsController,
-        addIncluAnimsController = addIncluAnimsController,
+        addAllOverrider = addAllOverrider,
+        addExcluOverrider = addExcluOverrider,
+        addIncluOverrider = addIncluOverrider,
         setAllOn = setAllOn,
         setExcluOn = setExcluOn,
         setIncluOn = setIncluOn,
