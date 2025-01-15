@@ -102,6 +102,8 @@ local animsList = {
     }
 }
 
+local states = {}
+
 local function errors(paths,dismiss)
     assert(
         next(paths),
@@ -194,7 +196,6 @@ function events.TICK()
         end
     end
 end
-----
 
 local bbmodels = {} -- don't put things in here
 
@@ -396,8 +397,8 @@ local function anims()
     local rTag= rightItem.tag
     local lTag = leftItem.tag
 
-    local crossR = rTag and (rTag["Charged"] == 1 or (rTag["ChargedProjectiles"] and next(rTag["ChargedProjectiles"])~= nil))
-    local crossL = lTag and (lTag["Charged"] == 1 or (lTag["ChargedProjectiles"] and next(lTag["ChargedProjectiles"])~= nil))
+    local crossbowRState = rTag and (rTag["Charged"] == 1 or (rTag["ChargedProjectiles"] and next(rTag["ChargedProjectiles"])~= nil))
+    local crossbowLState = lTag and (lTag["Charged"] == 1 or (lTag["ChargedProjectiles"] and next(lTag["ChargedProjectiles"])~= nil))
 
     local drinkRState = using and usingR == "DRINK"
     local drinkLState = using and usingL == "DRINK"
@@ -426,136 +427,91 @@ local function anims()
     local brushRState = using and usingR == "BRUSH"
     local brushLState = using and usingL == "BRUSH"
 
-    local exclude = not (using or crossR or crossL)
+    local exclude = not (using or crossbowRState or crossbowLState)
     local rightHoldState = rightItem.id ~= "minecraft:air" and exclude
     local leftHoldState = leftItem.id ~= "minecraft:air" and exclude
 
     -- anim states
-    for _, path in pairs(bbmodels) do
+    for key, path in pairs(bbmodels) do
+        states[key] = {}
+        states[key]["exclu"] = {}
+        local ex = states[key]["exclu"]
+        ex.flywalkbackState = creativeFlying and backward and (not (goingDown or goingUp))
+        ex.flysprintState = creativeFlying and sprinting and not isJumping and (not (goingDown or goingUp))
+        ex.flyupState = creativeFlying and goingUp
+        ex.flydownState = creativeFlying and goingDown
+        ex.flywalkState = creativeFlying and forward and (not (goingDown or goingUp)) and not sleeping or (ex.flysprintState and not path.flysprint) or (ex.flywalkbackState and not path.flywalkback)
+        or (ex.flyupState and not path.flyup) or (ex.flydownState and not path.flydown)
+        ex.flyState = creativeFlying and not sprinting and not moving and standing and not isJumping and (not (goingDown or goingUp)) and not sleeping or (ex.flywalkState and not path.flywalk) 
 
-        local flywalkbackState = creativeFlying and backward and (not (goingDown or goingUp))
-        local flysprintState = creativeFlying and sprinting and not isJumping and (not (goingDown or goingUp))
-        local flyupState = creativeFlying and goingUp
-        local flydownState = creativeFlying and goingDown
-        local flywalkState = creativeFlying and forward and (not (goingDown or goingUp)) and not sleeping or (flysprintState and not path.flysprint) or (flywalkbackState and not path.flywalkback)
-        or (flyupState and not path.flyup) or (flydownState and not path.flydown)
-        local flyState = creativeFlying and not sprinting and not moving and standing and not isJumping and (not (goingDown or goingUp)) and not sleeping or (flywalkState and not path.flywalk) 
+        ex.watercrouchwalkbackState = inWater and crouching and backward and not goingDown
+        ex.watercrouchwalkState = inWater and crouching and forward and not (goingDown or goingUp) or (ex.watercrouchwalkbackState and not path.watercrouchwalkback)
+        ex.watercrouchupState = inWater and crouching and goingUp
+        ex.watercrouchdownState = inWater and crouching and goingDown or (ex.watercrouchupState and not path.watercrouchup)
+        ex.watercrouchState = inWater and crouching and not moving and not (goingDown or goingUp) or (ex.watercrouchdownState and not path.watercrouchdown) or (ex.watercrouchwalkState and not path.watercrouchwalk)
 
-        local watercrouchwalkbackState = inWater and crouching and backward and not goingDown
-        local watercrouchwalkState = inWater and crouching and forward and not (goingDown or goingUp) or (watercrouchwalkbackState and not path.watercrouchwalkback)
-        local watercrouchupState = inWater and crouching and goingUp
-        local watercrouchdownState = inWater and crouching and goingDown or (watercrouchupState and not path.watercrouchup)
-        local watercrouchState = inWater and crouching and not moving and not (goingDown or goingUp) or (watercrouchdownState and not path.watercrouchdown) or (watercrouchwalkState and not path.watercrouchwalk)
-
-        local waterdownState = inWater and goingDown and not falling and standing and not creativeFlying
-        local waterupState = inWater and goingUp and standing and not creativeFlying
-        local waterwalkbackState = inWater and backward and hover and standing and not creativeFlying
-        local waterwalkState = inWater and forward and hover and standing and not creativeFlying or (waterwalkbackState and not path.waterwalkback) or (waterdownState and not path.waterdown)
-        or (waterupState and not path.waterup)
-        local waterState = inWater and not moving and standing and hover and not creativeFlying or (waterwalkState and not path.waterwalk)
+        ex.waterdownState = inWater and goingDown and not falling and standing and not creativeFlying
+        ex.waterupState = inWater and goingUp and standing and not creativeFlying
+        ex.waterwalkbackState = inWater and backward and hover and standing and not creativeFlying
+        ex.waterwalkState = inWater and forward and hover and standing and not creativeFlying or (ex.waterwalkbackState and not path.waterwalkback) or (ex.waterdownState and not path.waterdown)
+        or (ex.waterupState and not path.waterup)
+        ex.waterState = inWater and not moving and standing and hover and not creativeFlying or (ex.waterwalkState and not path.waterwalk)
         
-        local crawlstillState = crawling and not moving
-        local crawlState = crawling and moving or (crawlstillState and not path.crawlstill)
+        ex.crawlstillState = crawling and not moving
+        ex.crawlState = crawling and moving or (ex.crawlstillState and not path.crawlstill)
 
-        local swimState = liquidSwim or (crawlState and not path.crawl)
+        ex.swimState = liquidSwim or (ex.crawlState and not path.crawl)
 
-        local elytradownState = gliding and goingDown
-        local elytraState = gliding and not goingDown or (elytradownState and not path.elytradown)
+        ex.elytradownState = gliding and goingDown
+        ex.elytraState = gliding and not goingDown or (ex.elytradownState and not path.elytradown)
 
-        local sitpassState = passenger and standing
-        local sitjumpdownState = sitting and not passenger and standing and (jumpingDown or falling)
-        local sitjumpupState = sitting and not passenger and jumpingUp and standing or (sitjumpdownState and not path.sitjumpdown)
-        local sitmovebackState = sitting and not passenger and not isJumping and backwards and standing
-        local sitmoveState = velocity:length() > 0 and not passenger and not backwards and standing and sitting and not isJumping or (sitmovebackState and not path.sitmoveback) or (sitjumpupState and not path.sitjumpup)
-        local sitState = sitting and not passenger and velocity:length() == 0 and not isJumping and standing or (sitmoveState and not path.sitmove) or (sitpassState and not path.sitpass)
+        ex.sitpassState = passenger and standing
+        ex.sitjumpdownState = sitting and not passenger and standing and (jumpingDown or falling)
+        ex.sitjumpupState = sitting and not passenger and jumpingUp and standing or (ex.sitjumpdownState and not path.sitjumpdown)
+        ex.sitmovebackState = sitting and not passenger and not isJumping and backwards and standing
+        ex.sitmoveState = velocity:length() > 0 and not passenger and not backwards and standing and sitting and not isJumping or (ex.sitmovebackState and not path.sitmoveback) or (ex.sitjumpupState and not path.sitjumpup)
+        ex.sitState = sitting and not passenger and velocity:length() == 0 and not isJumping and standing or (ex.sitmoveState and not path.sitmove) or (ex.sitpassState and not path.sitpass)
 
-        local tridentState = spin
-        local sleepState = sleeping
+        ex.tridentState = spin
+        ex.sleepState = sleeping
 
-        local climbcrouchwalkState = ladder and crouching and (moving or yvel ~= 0)
-        local climbcrouchState = ladder and crouching and hover and not moving or (climbcrouchwalkState and not path.climbcrouchwalk)
-        local climbdownState = ladder and goingDown
-        local climbstillState = ladder and not crouching and hover
-        local climbState = ladder and goingUp and not crouching or (climbdownState and not path.climbdown) or (climbstillState and not path.climbstill)
+        ex.climbcrouchwalkState = ladder and crouching and (moving or yvel ~= 0)
+        ex.climbcrouchState = ladder and crouching and hover and not moving or (ex.climbcrouchwalkState and not path.climbcrouchwalk)
+        ex.climbdownState = ladder and goingDown
+        ex.climbstillState = ladder and not crouching and hover
+        ex.climbState = ladder and goingUp and not crouching or (ex.climbdownState and not path.climbdown) or (ex.climbstillState and not path.climbstill)
 
-        local crouchjumpdownState = crouching and jumpingDown and not ladder and not inWater
-        local crouchjumpupState = crouching and jumpingUp and not ladder or (not oneJump and (crouchjumpdownState and not path.crouchjumpdown))
-        local crouchwalkbackState = backward and crouching and not ladder and not inWater or (watercrouchwalkbackState and not path.watercrouchwalkback and not path.watercrouchwalk and not path.watercrouch)
-        local crouchwalkState = forward and crouching and not ladder and not inWater or (crouchwalkbackState and not path.crouchwalkback) or (not oneJump and (crouchjumpupState and not path.crouchjumpup)) or ((watercrouchwalkState and not watercrouchwalkbackState) and not path.watercrouchwalk and not path.watercrouch)
-        local crouchState = crouching and not walking and not isJumping and not ladder and not inWater and not cooldown or (crouchwalkState and not path.crouchwalk) or (climbcrouchState and not path.climbcrouch) or ((watercrouchState and not watercrouchwalkState) and not path.watercrouch)
+        ex.crouchjumpdownState = crouching and jumpingDown and not ladder and not inWater
+        ex.crouchjumpupState = crouching and jumpingUp and not ladder or (not oneJump and (ex.crouchjumpdownState and not path.crouchjumpdown))
+        ex.crouchwalkbackState = backward and crouching and not ladder and not inWater or (ex.watercrouchwalkbackState and not path.watercrouchwalkback and not path.watercrouchwalk and not path.watercrouch)
+        ex.crouchwalkState = forward and crouching and not ladder and not inWater or (ex.crouchwalkbackState and not path.crouchwalkback) or (not oneJump and (ex.crouchjumpupState and not path.crouchjumpup)) or ((ex.watercrouchwalkState and not ex.watercrouchwalkbackState) and not path.watercrouchwalk and not path.watercrouch)
+        ex.crouchState = crouching and not walking and not isJumping and not ladder and not inWater and not cooldown or (ex.crouchwalkState and not path.crouchwalk) or (ex.climbcrouchState and not path.climbcrouch) or ((ex.watercrouchState and not ex.watercrouchwalkState) and not path.watercrouch)
         
-        local fallState = falling and not gliding and not creativeFlying and not sitting
+        ex.fallState = falling and not gliding and not creativeFlying and not sitting
         
-        local sprintjumpdownState = jumpingDown and sprinting and not creativeFlying and not ladder
-        local sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (not oneJump and (sprintjumpdownState and not path.sprintjumpdown))
-        local jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (fallState and not path.fall) or (oneJump and (sprintjumpdownState and not path.sprintjumpdown)) or (oneJump and (crouchjumpdownState and not path.crouchjumpdown))
-        local jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (jumpdownState and not path.jumpdown) or (tridentState and not path.trident) or (oneJump and (sprintjumpupState and not path.sprintjumpup)) or (oneJump and (crouchjumpupState and not path.crouchjumpup))
+        ex.sprintjumpdownState = jumpingDown and sprinting and not creativeFlying and not ladder
+        ex.sprintjumpupState = jumpingUp and sprinting and not creativeFlying and not ladder or (not oneJump and (ex.sprintjumpdownState and not path.sprintjumpdown))
+        ex.jumpdownState = jumpingDown and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (ex.fallState and not path.fall) or (oneJump and (ex.sprintjumpdownState and not path.sprintjumpdown)) or (oneJump and (ex.crouchjumpdownState and not path.crouchjumpdown))
+        ex.jumpupState = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (ex.jumpdownState and not path.jumpdown) or (ex.tridentState and not path.trident) or (oneJump and (ex.sprintjumpupState and not path.sprintjumpup)) or (oneJump and (ex.crouchjumpupState and not path.crouchjumpup))
 
-        local sprintState = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown or (not oneJump and (sprintjumpupState and not path.sprintjumpup))
-        local walkbackState = backward and standing and not creativeFlying and not ladder and not inWater or (flywalkbackState and not path.flywalkback and not path.flywalk and not path.fly)
-        local walkState = forward and standing and not creativeFlying and not ladder and not inWater and not cooldown or (walkbackState and not path.walkback) or (sprintState and not path.sprint) or (climbState and not path.climb) 
-        or (swimState and not path.swim) or (elytraState and not path.elytra) or (jumpupState and not path.jumpup) or (waterwalkState and (not path.waterwalk and not path.water)) or ((flywalkState and not flywalkbackState) and not path.flywalk and not path.fly)
-        or (crouchwalkState and not (path.crouchwalk or path.crouch))
-        local idleState = not moving and not sprinting and standing and not isJumping and not sitting and not creativeFlying and not ladder and not inWater or (sleepState and not path.sleep) or (sitState and not path.sit)
-        or ((waterState and not waterwalkState) and not path.water) or ((flyState and not flywalkState) and not path.fly) or ((crouchState and not crouchwalkState) and not path.crouch)
+        ex.sprintState = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown or (not oneJump and (ex.sprintjumpupState and not path.sprintjumpup))
+        ex.walkbackState = backward and standing and not creativeFlying and not ladder and not inWater or (ex.flywalkbackState and not path.flywalkback and not path.flywalk and not path.fly)
+        ex.walkState = forward and standing and not creativeFlying and not ladder and not inWater and not cooldown or (ex.walkbackState and not path.walkback) or (ex.sprintState and not path.sprint) or (ex.climbState and not path.climb) 
+        or (ex.swimState and not path.swim) or (ex.elytraState and not path.elytra) or (ex.jumpupState and not path.jumpup) or (ex.waterwalkState and (not path.waterwalk and not path.water)) or ((ex.flywalkState and not ex.flywalkbackState) and not path.flywalk and not path.fly)
+        or (ex.crouchwalkState and not (path.crouchwalk or path.crouch))
+        ex.idleState = not moving and not sprinting and standing and not isJumping and not sitting and not creativeFlying and not ladder and not inWater or (ex.sleepState and not path.sleep) or (ex.sitState and not path.sit)
+        or ((ex.waterState and not ex.waterwalkState) and not path.water) or ((ex.flyState and not ex.flywalkState) and not path.fly) or ((ex.crouchState and not ex.crouchwalkState) and not path.crouch)
 
-        local deadState = hp <= 0
+        ex.deathState = hp <= 0
 
-        if path.death then path.death:playing(excluState and deadState) end
+        for _, value in pairs(animsList.exclu) do
+            if path[value] then path[value]:setPlaying(excluState and ex[value.."State"]) end
+        end
 
     -- anim play testing
         if path.hurt and player:getNbt().HurtTime == 9 then
             path.hurt:restart()
         end
-
-        if path.idle then path.idle:playing(excluState and idleState) end
-        if path.walk then path.walk:playing(excluState and walkState) end
-        if path.walkback then path.walkback:playing(excluState and walkbackState) end
-        if path.sprint then path.sprint:playing(excluState and sprintState) end
-        if path.sprintjumpup then path.sprintjumpup:playing(excluState and sprintjumpupState) end
-        if path.sprintjumpdown then path.sprintjumpdown:playing(excluState and sprintjumpdownState) end
-        if path.crouch then path.crouch:playing(excluState and crouchState) end
-        if path.crouchwalk then path.crouchwalk:playing(excluState and crouchwalkState) end
-        if path.crouchwalkback then path.crouchwalkback:playing(excluState and crouchwalkbackState) end
-        if path.crouchjumpup then path.crouchjumpup:playing(excluState and crouchjumpupState) end
-        if path.crouchjumpdown then path.crouchjumpdown:playing(excluState and crouchjumpdownState) end
-        if path.jumpup then path.jumpup:playing(excluState and jumpupState) end
-        if path.jumpdown then path.jumpdown:playing(excluState and jumpdownState) end
-        if path.fall then path.fall:playing(excluState and fallState) end
-        if path.elytra then path.elytra:playing(excluState and elytraState) end
-        if path.elytradown then path.elytradown:playing(excluState and elytradownState) end
-        if path.trident then path.trident:playing(excluState and tridentState) end
-        if path.sleep then path.sleep:playing(excluState and sleepState) end
-        if path.swim then path.swim:playing(excluState and swimState) end
-        if path.sit then path.sit:playing(excluState and sitState) end
-        if path.sitmove then path.sitmove:playing(excluState and sitmoveState) end
-        if path.sitmoveback then path.sitmoveback:playing(excluState and sitmovebackState) end
-        if path.sitjumpup then path.sitjumpup:playing(excluState and sitjumpupState) end
-        if path.sitjumpdown then path.sitjumpdown:playing(excluState and sitjumpdownState) end
-        if path.sitpass then path.sitpass:playing(excluState and sitpassState) end
-        if path.crawl then path.crawl:playing(excluState and crawlState) end
-        if path.crawlstill then path.crawlstill:playing(excluState and crawlstillState) end
-        if path.fly then path.fly:playing(excluState and flyState) end
-        if path.flywalk then path.flywalk:playing(excluState and flywalkState) end
-        if path.flywalkback then path.flywalkback:playing(excluState and flywalkbackState) end
-        if path.flysprint then path.flysprint:playing(excluState and flysprintState) end
-        if path.flyup then path.flyup:playing(excluState and flyupState) end
-        if path.flydown then path.flydown:playing(excluState and flydownState) end
-        if path.climb then path.climb:playing(excluState and climbState) end
-        if path.climbstill then path.climbstill:playing(excluState and climbstillState) end
-        if path.climbdown then path.climbdown:playing(excluState and climbdownState) end
-        if path.climbcrouch then path.climbcrouch:playing(excluState and climbcrouchState) end
-        if path.climbcrouchwalk then path.climbcrouchwalk:playing(excluState and climbcrouchwalkState) end
-        if path.water then path.water:playing(excluState and waterState) end
-        if path.waterwalk then path.waterwalk:playing(excluState and waterwalkState) end
-        if path.waterwalkback then path.waterwalkback:playing(excluState and waterwalkbackState) end
-        if path.waterup then path.waterup:playing(excluState and waterupState) end
-        if path.waterdown then path.waterdown:playing(excluState and waterdownState) end
-        if path.watercrouch then path.watercrouch:playing(excluState and watercrouchState) end
-        if path.watercrouchwalk then path.watercrouchwalk:playing(excluState and watercrouchwalkState) end
-        if path.watercrouchwalkback then path.watercrouchwalkback:playing(excluState and watercrouchwalkbackState) end
-        if path.watercrouchdown then path.watercrouchdown:playing(excluState and watercrouchdownState) end
-        if path.watercrouchup then path.watercrouchup:playing(excluState and watercrouchupState) end
 
         if path.eatR then path.eatR:playing(incluState and eatRState or (drinkRState and not path.drinkR)) end
         if path.eatL then path.eatL:playing(incluState and eatLState or (drinkLState and not path.drinkL)) end
@@ -567,8 +523,8 @@ local function anims()
         if path.bowL then path.bowL:playing(incluState and bowLState) end
         if path.loadR then path.loadR:playing(incluState and loadRState) end
         if path.loadL then path.loadL:playing(incluState and loadLState) end
-        if path.crossbowR then path.crossbowR:playing(incluState and crossR) end
-        if path.crossbowL then path.crossbowL:playing(incluState and crossL) end
+        if path.crossbowR then path.crossbowR:playing(incluState and crossbowRState) end
+        if path.crossbowL then path.crossbowL:playing(incluState and crossbowLState) end
         if path.spearR then path.spearR:playing(incluState and spearRState) end
         if path.spearL then path.spearL:playing(incluState and spearLState) end
         if path.spyglassR then path.spyglassR:playing(incluState and spyglassRState) end
