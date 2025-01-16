@@ -1,4 +1,4 @@
--- V1.2 for 0.1.0 and above
+-- V1.3 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -401,7 +401,7 @@ local function getInfo()
     if leftSuccess then leftResult = leftItem:getUseAction() else leftResult = "NONE" end
     local usingL = using and activeness == leftActive and leftResult
     local swing = player:getSwingTime()
-    local arm = swing > 0 and not sleeping and player:getSwingArm()
+    local arm = swing > 0  and not sleeping and player:getSwingArm()
     local rTag= rightItem.tag
     local lTag = leftItem.tag
     local crossR = rTag and (rTag["Charged"] == 1 or (rTag["ChargedProjectiles"] and next(rTag["ChargedProjectiles"])~= nil)) or false
@@ -502,7 +502,7 @@ local function getInfo()
         ob.walking.active = forward and standing and not creativeFlying and not ladder and not cooldown and not inWater or (ob.walkingback.active and next(ob.walkingback.list)==nil) or (ob.sprinting.active and next(ob.sprinting.list)==nil) or (ob.climbing.active and next(ob.climbing.list)==nil)
         or (ob.swimming.active and next(ob.swimming.list)==nil) or (ob.elytra.active and next(ob.elytra.list)==nil) or (ob.jumpingup.active and next(ob.jumpingup.list)==nil) or (ob.waterwalk.active and (next(ob.waterwalk.list)==nil and next(ob.water.list)==nil)) or ((ob.flywalk.active and not ob.flywalkback.active) and next(ob.flywalk.list)==nil and next(ob.flying.list)==nil)
         or (ob.crouchwalk.active and (next(ob.crouchwalk)==nil or next(ob.crouching.list)==nil))
-        ob.idling.active = not moving and not sprinting and standing and not isJumping and not sitting and not inWater and not creativeFlying and not ladder or (ob.sleeping.active and next(ob.sleep.list)==nil) or (ob.sitting.active and next(ob.sitting.list)==nil)
+        ob.idling.active = not moving and not sprinting and standing and not isJumping and not sitting and not inWater and not creativeFlying and not ladder or (ob.sleeping.active and next(ob.sleeping.list)==nil) or (ob.sitting.active and next(ob.sitting.list)==nil)
         or ((ob.water.active and not ob.waterwalk.active) and next(ob.water.list)==nil) or ((ob.flying.active and not ob.flywalk.active) and next(ob.flying.list)==nil) or ((ob.crouching.active and not ob.crouchwalk.active) and next(ob.crouching.list)==nil)
 
         ob.death.active = hp <= 0
