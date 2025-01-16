@@ -401,7 +401,7 @@ local function getInfo()
     if leftSuccess then leftResult = leftItem:getUseAction() else leftResult = "NONE" end
     local usingL = using and activeness == leftActive and leftResult
     local swing = player:getSwingTime()
-    local arm = swing > 0 and player:getSwingArm() and not sleeping
+    local arm = swing > 0 and not sleeping and player:getSwingArm()
     local rTag= rightItem.tag
     local lTag = leftItem.tag
     local crossR = rTag and (rTag["Charged"] == 1 or (rTag["ChargedProjectiles"] and next(rTag["ChargedProjectiles"])~= nil)) or false
