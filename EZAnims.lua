@@ -1,4 +1,4 @@
--- V1.1 for 0.1.0 and above
+-- V1.2 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
