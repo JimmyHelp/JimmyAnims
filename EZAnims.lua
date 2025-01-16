@@ -1,4 +1,4 @@
--- V1 for 0.1.0 and above
+-- V1.1 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -77,8 +77,8 @@ local aList = {
     bowL = {active = false,list = {},type = "incluAnims"},
     loadR = {active = false,list = {},type = "incluAnims"},
     loadL = {active = false,list = {},type = "incluAnims"},
-    crossbowR = {active = false,list = {},type = "incluAnims"},
-    crossbowL = {active = false,list = {},type = "incluAnims"},
+    crossR = {active = false,list = {},type = "incluAnims"},
+    crossL = {active = false,list = {},type = "incluAnims"},
     spearR = {active = false,list = {},type = "incluAnims"},
     spearL = {active = false,list = {},type = "incluAnims"},
     spyglassR = {active = false,list = {},type = "incluAnims"},
@@ -524,8 +524,8 @@ local function getInfo()
         ob.bowL.active = usingL == "BOW"
         ob.loadR.active = usingR == "CROSSBOW"
         ob.loadL.active = usingL == "CROSSBOW"
-        ob.crossbowR.active = crossR
-        ob.crossbowL.active = crossL
+        ob.crossR.active = crossR
+        ob.crossL.active = crossL
         ob.spearR.active = usingR == "SPEAR"
         ob.spearL.active = usingL == "SPEAR"
         ob.spyglassR.active = usingR == "SPEAR"
