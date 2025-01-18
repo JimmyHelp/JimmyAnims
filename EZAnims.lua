@@ -1,4 +1,4 @@
--- V1.3 for 0.1.0 and above
+-- V1.5 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -263,6 +263,10 @@ function controller:setState(exState,inState)
     return self
 end
 
+function controller:getState()
+    return self.toggleState
+end
+
 local function getStates(type,o)
     return o.toggleState[type]
 end
@@ -441,7 +445,7 @@ local function getInfo()
         ob.flysprint.active = creativeFlying and sprinting and not isJumping and (not (goingDown or goingUp))
         ob.flyup.active = creativeFlying and goingUp
         ob.flydown.active = creativeFlying and goingDown
-        ob.flywalk.active = creativeFlying and forward and (not (goingDown or goingUp)) and not sleeping or (ob.flysprint.active and next(ob.flysprint.list)==nil) or (flywalkback and next(ob.flywalkback.list)==nil)
+        ob.flywalk.active = creativeFlying and forward and (not (goingDown or goingUp)) and not sleeping or (ob.flysprint.active and next(ob.flysprint.list)==nil) or (ob.flywalkback.active and next(ob.flywalkback.list)==nil)
         or (ob.flyup.active and next(ob.flyup.list)==nil) or (ob.flydown.active and next(ob.flydown.list)==nil)
         ob.flying.active = creativeFlying and not sprinting and not moving and standing and not isJumping and (not (goingDown or goingUp)) and not sleeping or (ob.flywalk.active and next(ob.flywalk.list)==nil)
 
@@ -528,15 +532,18 @@ local function getInfo()
         ob.crossL.active = crossL
         ob.spearR.active = usingR == "SPEAR"
         ob.spearL.active = usingL == "SPEAR"
-        ob.spyglassR.active = usingR == "SPEAR"
-        ob.spyglassL.active = usingL == "SPEAR"
+        ob.spyglassR.active = usingR == "SPYGLASS"
+        ob.spyglassL.active = usingL == "SPYGLASS"
         ob.hornR.active = usingR == "TOOT_HORN"
         ob.hornL.active = usingL == "TOOT_HORN"
         ob.brushR.active = usingR == "BRUSH"
         ob.brushL.active = usingL == "BRUSH"
 
         for key,value in pairs(o.aList) do
-            if (value.active ~= o.oldList[key].active) or o.toggleDiff or o.diff then
+            if (value.active ~= o.oldList[key].active) then
+                setAnimation(key,getOverriders(value.type,o),getStates(value.type,o),o)
+            end
+            if (o.toggleDiff or o.diff) and value.active then
                 setAnimation(key,getOverriders(value.type,o),getStates(value.type,o),o)
             end
             o.oldList[key].active = value.active
@@ -601,8 +608,8 @@ getBBModels()
 
 local firstRun = true
 ---@param ... table
-function anims:addBBmodel(...)
-    local bbmodels = {}
+function anims:addBBModel(...)
+    local bbmodels = {...}
     if firstRun then
         firstRun = false
         if GSAnimBlend then setBlendTime(0,0,objects[1]) end
@@ -610,10 +617,6 @@ function anims:addBBmodel(...)
         for _,list in pairs(aList) do
             list.list = {}
         end
-    end
-
-    for _,value in pairs({...}) do
-        bbmodels[#bbmodels + 1] = value
     end
 
     if next(bbmodels) == nil then
