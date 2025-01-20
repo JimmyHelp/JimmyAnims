@@ -1,4 +1,4 @@
--- V1.7 for 0.1.0 and above
+-- V1.8 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -617,12 +617,6 @@ local firstRun = true
 ---@param ... table
 function anims:addBBModel(...)
     local bbmodels = {...}
-    if firstRun then
-        firstRun = false
-        if GSAnimBlend then setBlendTime(0,0,objects[1]) end
-        objects = {}
-    end
-
     if next(bbmodels) == nil then
         error("The blockbench model provided couldn't be found because it has no animations, or because of a typo or some other mistake.",2)
     end
@@ -664,7 +658,3 @@ end
 
 anims.controller = controller
 return anims
-
---[[ things left to implement:
-    - instance it or use objects or whatever
-]]
