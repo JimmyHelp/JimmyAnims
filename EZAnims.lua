@@ -1,4 +1,4 @@
--- V1.5 for 0.1.0 and above
+-- V1.7 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -9,91 +9,93 @@ local controllerMT = {__index = controller}
 
 local objects = {}
 
-local aList = {
-    idling = {active = false,list = {},type = "excluAnims"},
-    walking = {active = false,list = {},type = "excluAnims"},
-    walkingback = {active = false,list = {},type = "excluAnims"},
-    jumpingup = {active = false,list = {},type = "excluAnims"},
-    jumpingdown = {active = false,list = {},type = "excluAnims"},
-    falling = {active = false,list = {},type = "excluAnims"},
-    sprinting = {active = false,list = {},type = "excluAnims"},
-    sprintjumpup = {active = false,list = {},type = "excluAnims"},
-    sprintjumpdown = {active = false,list = {},type = "excluAnims"},
-    crouching = {active = false,list = {},type = "excluAnims"},
-    crouchwalk = {active = false,list = {},type = "excluAnims"},
-    crouchwalkback = {active = false,list = {},type = "excluAnims"},
-    crouchjumpup = {active = false,list = {},type = "excluAnims"},
-    crouchjumpdown = {active = false,list = {},type = "excluAnims"},
-    elytra = {active = false,list = {},type = "excluAnims"},
-    elytradown = {active = false,list = {},type = "excluAnims"},
-    trident = {active = false,list = {},type = "excluAnims"},
-    sleeping = {active = false,list = {},type = "excluAnims"},
-    swimming = {active = false,list = {},type = "excluAnims"},
-    sitting = {active = false,list = {},type = "excluAnims"},
-    sitmove = {active = false,list = {},type = "excluAnims"},
-    sitmoveback = {active = false,list = {},type = "excluAnims"},
-    sitjumpup = {active = false,list = {},type = "excluAnims"},
-    sitjumpdown = {active = false,list = {},type = "excluAnims"},
-    sitpass = {active = false,list = {},type = "excluAnims"},
-    crawling = {active = false,list = {},type = "excluAnims"},
-    crawlstill = {active = false,list = {},type = "excluAnims"},
-    flying = {active = false,list = {},type = "excluAnims"},
-    flywalk = {active = false,list = {},type = "excluAnims"},
-    flywalkback = {active = false,list = {},type = "excluAnims"},
-    flysprint = {active = false,list = {},type = "excluAnims"},
-    flyup = {active = false,list = {},type = "excluAnims"},
-    flydown = {active = false,list = {},type = "excluAnims"},
-    climbing = {active = false,list = {},type = "excluAnims"},
-    climbstill = {active = false,list = {},type = "excluAnims"},
-    climbdown = {active = false,list = {},type = "excluAnims"},
-    climbcrouch = {active = false,list = {},type = "excluAnims"},
-    climbcrouchwalking = {active = false,list = {},type = "excluAnims"},
-    water = {active = false,list = {},type = "excluAnims"},
-    waterwalk = {active = false,list = {},type = "excluAnims"},
-    waterwalkback = {active = false,list = {},type = "excluAnims"},
-    waterup = {active = false,list = {},type = "excluAnims"},
-    waterdown = {active = false,list = {},type = "excluAnims"},
-    watercrouch = {active = false,list = {},type = "excluAnims"},
-    watercrouchwalk = {active = false,list = {},type = "excluAnims"},
-    watercrouchwalkback = {active = false,list = {},type = "excluAnims"},
-    watercrouchup = {active = false,list = {},type = "excluAnims"},
-    watercrouchdown = {active = false,list = {},type = "excluAnims"},
-    hurt = {active = false,list = {},type = "excluAnims"},
-    death = {active = false,list = {},type = "excluAnims"},
-
-    attackR = {active = false,list = {},type = "incluAnims"},
-    attackL = {active = false,list = {},type = "incluAnims"},
-    mineR = {active = false,list = {},type = "incluAnims"},
-    mineL = {active = false,list = {},type = "incluAnims"},
-    holdR = {active = false,list = {},type = "incluAnims"},
-    holdL = {active = false,list = {},type = "incluAnims"},
-    eatR = {active = false,list = {},type = "incluAnims"},
-    eatL = {active = false,list = {},type = "incluAnims"},
-    drinkR = {active = false,list = {},type = "incluAnims"},
-    drinkL = {active = false,list = {},type = "incluAnims"},
-    blockR = {active = false,list = {},type = "incluAnims"},
-    blockL = {active = false,list = {},type = "incluAnims"},
-    bowR = {active = false,list = {},type = "incluAnims"},
-    bowL = {active = false,list = {},type = "incluAnims"},
-    loadR = {active = false,list = {},type = "incluAnims"},
-    loadL = {active = false,list = {},type = "incluAnims"},
-    crossR = {active = false,list = {},type = "incluAnims"},
-    crossL = {active = false,list = {},type = "incluAnims"},
-    spearR = {active = false,list = {},type = "incluAnims"},
-    spearL = {active = false,list = {},type = "incluAnims"},
-    spyglassR = {active = false,list = {},type = "incluAnims"},
-    spyglassL = {active = false,list = {},type = "incluAnims"},
-    hornR = {active = false,list = {},type = "incluAnims"},
-    hornL = {active = false,list = {},type = "incluAnims"},
-    brushR = {active = false,list = {},type = "incluAnims"},
-    brushL = {active = false,list = {},type = "incluAnims"},
+local exList = {
+    "idling",
+    "walking",
+    "walkingback",
+    "jumpingup",
+    "jumpingdown",
+    "falling",
+    "sprinting",
+    "sprintjumpup",
+    "sprintjumpdown",
+    "crouching",
+    "crouchwalk",
+    "crouchwalkback",
+    "crouchjumpup",
+    "crouchjumpdown",
+    "elytra",
+    "elytradown",
+    "trident",
+    "sleeping",
+    "swimming",
+    "sitting",
+    "sitmove",
+    "sitmoveback",
+    "sitjumpup",
+    "sitjumpdown",
+    "sitpass",
+    "crawling",
+    "crawlstill",
+    "flying",
+    "flywalk",
+    "flywalkback",
+    "flysprint",
+    "flyup",
+    "flydown",
+    "climbing",
+    "climbstill",
+    "climbdown",
+    "climbcrouch",
+    "climbcrouchwalking",
+    "water",
+    "waterwalk",
+    "waterwalkback",
+    "waterup",
+    "waterdown",
+    "watercrouch",
+    "watercrouchwalk",
+    "watercrouchwalkback",
+    "watercrouchup",
+    "watercrouchdown",
+    "hurt",
+    "death"
 }
 
-local oldList = {}
+local incList = {
+    "attackR",
+    "attackL",
+    "mineR",
+    "mineL",
+    "holdR",
+    "holdL",
+    "eatR",
+    "eatL",
+    "drinkR",
+    "drinkL",
+    "blockR",
+    "blockL",
+    "bowR",
+    "bowL",
+    "loadR",
+    "loadL",
+    "crossR",
+    "crossL",
+    "spearR",
+    "spearL",
+    "spyglassR",
+    "spyglassL",
+    "hornR",
+    "hornL",
+    "brushR",
+    "brushL",
+}
+
+--[[local oldList = {} -- simply make the list again
 
 for key, _ in pairs(aList) do
     oldList[key] = {active = false}
-end
+end]]
 
 local GSAnimBlend
 for _, key in ipairs(listFiles(nil,true)) do
@@ -132,30 +134,20 @@ function controller:setBlendTimes(ex,inc)
     return self
 end
 
-local function deep_copy(original)
-    local copy = {}
-    for key, value in pairs(original) do
-        if type(value) == "table" then
-            copy[key] = deep_copy(value)
-        else
-            copy[key] = value
-        end
-    end
-    return copy
-end
-
 local flyinit
 local function addAnims(bb,o)
-    for animlist,_ in pairs(o.aList) do
-        for _, animss in pairs(bb) do
-            for key,anim in pairs(animss) do
-                if key:find(animlist.."$") then
-                    o.aList[animlist].list[#o.aList[animlist].list + 1] = anim
-                    if key:find("fly") then flyinit = true end
+    local listy = o.aList
+    for _,anim in pairs(bb) do
+        for name,animation in pairs(anim) do
+            if name:find("fly") then flyinit = true end
+            for key, _ in pairs(o.aList) do
+                if name:find(key.."$") then
+                    listy[key].list[#listy[key].list+1] = animation
                 end
             end
         end
     end
+
     if GSAnimBlend then setBlendTime(4,4,o) end
 end
 
@@ -308,7 +300,8 @@ end
 
 local diff = false
 local rightResult, leftResult, targetEntity, rightMine, leftMine, rightAttack, leftAttack, oldhitBlock, targetBlock, blockSuccess, blockResult, hitBlock
-local yvel, grounded, oldgrounded, cooldown, hasJumped, cFlying, oldcFlying
+local yvel, grounded, oldgrounded, hasJumped, cFlying, oldcFlying
+local cooldown = false
 local updateTimer  = 0
 local toggleDiff
 local function getInfo()
@@ -488,18 +481,18 @@ local function getInfo()
         ob.climbstill.active = ladder and not crouching and hover
         ob.climbing.active = ladder and goingUp and not crouching or (ob.climbdown.active and next(ob.climbdown.list)==nil) or (ob.climbstill.active and next(ob.climbstill.list)==nil)
 
-        ob.crouchjumpdown.active = crouching and jumpingDown and not ladder
-        ob.crouchjumpup.active = crouching and jumpingUp and not ladder or (not oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
-        ob.crouchwalkback.active = backward and crouching and not ladder or (ob.watercrouchwalkback.active and next(ob.watercrouchwalkback.list)==nil and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
-        ob.crouchwalk.active = forward and crouching and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup).list)==nil) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
-        ob.crouching.active = crouching and not walking and not isJumping and not ladder and not cooldown or (ob.crouchwalk.active and next(ob.crouchwalk.list)==nil) or (ob.climbcrouch.active and next(ob.climbcrouch.list)==nil) or ((ob.watercrouch.active and not ob.watercrouchwalk.active) and next(ob.watercrouch.list)==nil)
+        ob.crouchjumpdown.active = crouching and jumpingDown and not inWater and not ladder
+        ob.crouchjumpup.active = crouching and jumpingUp and not inWater and not ladder or (not oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
+        ob.crouchwalkback.active = backward and crouching and not inWater and not ladder or (ob.watercrouchwalkback.active and next(ob.watercrouchwalkback.list)==nil and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
+        ob.crouchwalk.active = forward and crouching and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
+        ob.crouching.active = crouching and not walking and not inWater and not isJumping and not ladder and not cooldown or (ob.crouchwalk.active and next(ob.crouchwalk.list)==nil) or (ob.climbcrouch.active and next(ob.climbcrouch.list)==nil) or ((ob.watercrouch.active and not ob.watercrouchwalk.active) and next(ob.watercrouch.list)==nil)
         
         ob.falling.active = falling and not gliding and not creativeFlying and not sitting
         
         ob.sprintjumpdown.active = jumpingDown and sprinting and not creativeFlying and not ladder or false
         ob.sprintjumpup.active = jumpingUp and sprinting and not creativeFlying and not ladder or (not oneJump and (ob.sprintjumpdown.active and next(ob.sprintjumpdown.list)==nil)) or false
-        ob.jumpingdown.active = jumpingDown and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (ob.falling.active and next(ob.falling.list)==nil) or (oneJump and (ob.sprintjumpdown.active and next(ob.sprintjumpdown.list)==nil)) or (oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
-        ob.jumpingup.active = jumpingUp and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (ob.jumpingdown.active and next(ob.jumpingdown.list)==nil) or (ob.trident.active and next(ob.trident.list)==nil) or (oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or (oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil))
+        ob.jumpingdown.active = jumpingDown and not ladder and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (ob.falling.active and next(ob.falling.list)==nil) or (oneJump and (ob.sprintjumpdown.active and next(ob.sprintjumpdown.list)==nil)) or (oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
+        ob.jumpingup.active = jumpingUp and not ladder and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (ob.jumpingdown.active and next(ob.jumpingdown.list)==nil) or (ob.trident.active and next(ob.trident.list)==nil) or (oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or (oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil))
 
         ob.sprinting.active = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown and not inWater or (not oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or false
         ob.walkingback.active = backward and standing and not creativeFlying and not ladder and not inWater or (ob.flywalkback.active and next(ob.flywalkback.list)==nil and next(ob.flywalk.list)==nil and next(ob.flying.list)==nil)
@@ -585,11 +578,23 @@ local function getBBModels()
         error("No blockbench models containing animations were found.")
     end
 
+    local aList = {}
+    local oldList = {}
+    for _, value in pairs(exList) do
+        aList[value] = {active = false,list = {},type = "excluAnims"}
+        oldList[value] = {active = false}
+    end
+
+    for _, value in pairs(incList) do
+        aList[value] = {active = false,list = {},type = "incluAnims"}
+        oldList[value] = {active = false}
+    end
+
     local o = setmetatable(
     {
         bbmodels=bbmodels,
-        aList=deep_copy(aList),
-        oldList=deep_copy(oldList),
+        aList=aList,
+        oldList=oldList,
         toggleState = {excluAnims="",incluAnims=""},
         oldToggle = {excluAnims="",incluAnims=""},
         toggleDiff = toggleDiff,
@@ -604,7 +609,9 @@ local function getBBModels()
     addAnims(bbmodels,o)
 end
 
-getBBModels()
+function events.entity_init()
+    if #objects == 0 then getBBModels() end
+end
 
 local firstRun = true
 ---@param ... table
@@ -614,19 +621,30 @@ function anims:addBBModel(...)
         firstRun = false
         if GSAnimBlend then setBlendTime(0,0,objects[1]) end
         objects = {}
-        for _,list in pairs(aList) do
-            list.list = {}
-        end
     end
 
     if next(bbmodels) == nil then
         error("The blockbench model provided couldn't be found because it has no animations, or because of a typo or some other mistake.",2)
     end
 
+    local aList = {}
+    local oldList = {}
+    for _, value in pairs(exList) do
+        aList[value] = {active = false,list = {},type = "excluAnims"}
+        oldList[value] = {active = false}
+    end
+
+    for _, value in pairs(incList) do
+        aList[value] = {active = false,list = {},type = "incluAnims"}
+        oldList[value] = {active = false}
+    end
+
     local o = setmetatable(
     {
-        bbmodels=bbmodels,aList=deep_copy(aList),
-        oldList=deep_copy(oldList),toggleState = {excluAnims="",incluAnims=""},
+        bbmodels=bbmodels,
+        aList=aList,
+        oldList=oldList,
+        toggleState = {excluAnims="",incluAnims=""},
         oldToggle = {excluAnims="",incluAnims=""},
         toggleDiff = toggleDiff,
         overriders = {excluAnims = {},incluAnims = {}, allAnims = {}},
