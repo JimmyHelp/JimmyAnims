@@ -1,4 +1,4 @@
--- V1.8 for 0.1.0 and above
+-- V1.9 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -199,10 +199,10 @@ end
 
 local function addOverriders(self,type,...)
     for _, value in pairs({...}) do
-        self.overriders[type][#self.overriders[type]+1] = value
         if #self.overriders[type] == 64 then
             error("The max amount of overriding animations for "..type.." (64) was reached. Do not put the code for adding overriding animations in a function, it will infinitely add animations.",3)
         end
+        self.overriders[type][#self.overriders[type]+1] = value
     end
 end
 
@@ -280,14 +280,17 @@ local function setAnimation(anim,override,state,o)
     local exists = true
     for _,value in pairs(saved.list) do
         if value:getName() == state..anim then
+            if not saved.active and saved.stop then break end
             value:setPlaying(saved.active and not override)
             exists = false
         else
+            if not saved.active and saved.stop then break end
             value:stop()
         end
     end
     for _,value in pairs(saved.list) do
         if exists and value:getName() == anim then
+            if not saved.active and saved.stop then break end
             value:setPlaying(saved.active and not override)
         end
     end
@@ -398,7 +401,7 @@ local function getInfo()
     if leftSuccess then leftResult = leftItem:getUseAction() else leftResult = "NONE" end
     local usingL = using and activeness == leftActive and leftResult
     local swing = player:getSwingTime()
-    local arm = swing > 0  and not sleeping and player:getSwingArm()
+    local arm = swing == 1 and not sleeping and player:getSwingArm()
     local rTag= rightItem.tag
     local lTag = leftItem.tag
     local crossR = rTag and (rTag["Charged"] == 1 or (rTag["ChargedProjectiles"] and next(rTag["ChargedProjectiles"])~= nil)) or false
@@ -590,6 +593,12 @@ local function getBBModels()
         oldList[value] = {active = false}
     end
 
+    aList.attackR.stop = true
+    aList.attackL.stop = true
+    aList.mineR.stop = true
+    aList.mineL.stop = true
+    aList.hurt.stop = true
+
     local o = setmetatable(
     {
         bbmodels=bbmodels,
@@ -632,6 +641,12 @@ function anims:addBBModel(...)
         aList[value] = {active = false,list = {},type = "incluAnims"}
         oldList[value] = {active = false}
     end
+
+    aList.attackR.stop = true
+    aList.attackL.stop = true
+    aList.mineR.stop = true
+    aList.mineL.stop = true
+    aList.hurt.stop = true
 
     local o = setmetatable(
     {
