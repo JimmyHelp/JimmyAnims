@@ -1,4 +1,4 @@
--- V1.10 for 0.1.0 and above
+-- V1.11 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -159,6 +159,7 @@ function controller:setAnims(anim,ifFly)
     for key, value in pairs(anim) do
         self.aList[key].list = value
     end
+    if GSAnimBlend then setBlendTime(4,4,self) end
     return self
 end
 
@@ -298,11 +299,9 @@ local function setAnimation(anim,override,state,o)
     for _,value in pairs(saved.list) do
         if value:getName() == state..anim then
             if not saved.active and saved.stop then break end
-            --value:setPlaying(saved.active and not override)
-            if saved.active and not override then
+            value:setPlaying(saved.active and not override)
+            if saved.active and saved.stop and not override then
                 value:restart()
-            else
-                value:stop()
             end
             exists = false
         else
@@ -313,18 +312,17 @@ local function setAnimation(anim,override,state,o)
     for _,value in pairs(saved.list) do
         if exists and value:getName() == anim then
             if not saved.active and saved.stop then break end
-            --value:setPlaying(saved.active and not override)
-            if saved.active and not override then
+            if saved.active and saved.stop and not override then
                 value:restart()
-            else
-                value:stop()
+                break
             end
+            value:setPlaying(saved.active and not override)
         end
     end
 end
 
 local flying
-function pings.JimmyAnims_cFly(x)
+function pings.EZAnims_cFly(x)
     flying = x
 end
 
@@ -339,13 +337,13 @@ local function getInfo()
         if flyinit then
             cFlying = host:isFlying()
             if cFlying ~= oldcFlying then
-                pings.JimmyAnims_cFly(cFlying)
+                pings.EZAnims_cFly(cFlying)
             end
             oldcFlying = cFlying
 
             updateTimer = updateTimer + 1
             if updateTimer % 200 == 0 then
-                pings.JimmyAnims_cFly(cFlying)
+                pings.EZAnims_cFly(cFlying)
             end
         end
     end
