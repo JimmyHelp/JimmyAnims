@@ -1,4 +1,4 @@
--- V1.9 for 0.1.0 and above
+-- V1.10 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -143,12 +143,23 @@ local function addAnims(bb,o)
             for key, _ in pairs(o.aList) do
                 if name:find(key.."$") then
                     listy[key].list[#listy[key].list+1] = animation
+                    break
                 end
             end
         end
     end
 
     if GSAnimBlend then setBlendTime(4,4,o) end
+end
+
+---@param anim table
+---@param ifFly? boolean
+function controller:setAnims(anim,ifFly)
+    flyinit = ifFly
+    for key, value in pairs(anim) do
+        self.aList[key].list = value
+    end
+    return self
 end
 
 ---- Run Later by manuel_2867 ----
@@ -185,6 +196,12 @@ local oneJump = false
 ---@param state? boolean
 function anims:setOneJump(state)
     oneJump = state or false
+    return self
+end
+
+local auto = true
+function anims:disableAutoSearch()
+    auto = false
     return self
 end
 
@@ -281,7 +298,12 @@ local function setAnimation(anim,override,state,o)
     for _,value in pairs(saved.list) do
         if value:getName() == state..anim then
             if not saved.active and saved.stop then break end
-            value:setPlaying(saved.active and not override)
+            --value:setPlaying(saved.active and not override)
+            if saved.active and not override then
+                value:restart()
+            else
+                value:stop()
+            end
             exists = false
         else
             if not saved.active and saved.stop then break end
@@ -291,7 +313,12 @@ local function setAnimation(anim,override,state,o)
     for _,value in pairs(saved.list) do
         if exists and value:getName() == anim then
             if not saved.active and saved.stop then break end
-            value:setPlaying(saved.active and not override)
+            --value:setPlaying(saved.active and not override)
+            if saved.active and not override then
+                value:restart()
+            else
+                value:stop()
+            end
         end
     end
 end
@@ -667,7 +694,7 @@ function anims:addBBModel(...)
     if #objects == 16 then
         error("The max amount of blockbench models (16) was reached. Do not put the code for adding blockbench models in a function, it will infinitely add blockbench models.",3)
     end
-    addAnims(bbmodels,o)
+    if auto then addAnims(bbmodels,o) end
     return o
 end
 
