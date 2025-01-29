@@ -1,4 +1,4 @@
--- V1.11 for 0.1.0 and above
+-- V1.12 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -122,7 +122,7 @@ function controller:setBlendTimes(ex,inc)
         error("The first arg is a non-number value ("..type(ex).."), must be a number or nil.",2)
     end
     if type(inc) ~= "number" and inc ~= nil then
-        error("The first arg is a non-number value ("..type(inc).."), must be a number or nil.",2)
+        error("The second arg is a non-number value ("..type(inc).."), must be a number or nil.",2)
     end
     if ex == nil then
         ex = 0
@@ -267,7 +267,7 @@ function controller:setState(exState,inState)
         error("The first arg is a non-string value ("..type(exState).."), must be a string or nil.",2)
     end
     if type(inState) ~= "string" and inState ~= nil then
-        error("The first arg is a non-string value ("..type(inState).."), must be a string or nil.",2)
+        error("The second arg is a non-string value ("..type(inState).."), must be a string or nil.",2)
     end
     self.toggleState = {excluAnims = exState or "",incluAnims = inState or exState or ""}
     return self
@@ -301,7 +301,7 @@ local function setAnimation(anim,override,state,o)
             if not saved.active and saved.stop then break end
             value:setPlaying(saved.active and not override)
             if saved.active and saved.stop and not override then
-                value:restart()
+                value:stop():play()
             end
             exists = false
         else
@@ -313,7 +313,7 @@ local function setAnimation(anim,override,state,o)
         if exists and value:getName() == anim then
             if not saved.active and saved.stop then break end
             if saved.active and saved.stop and not override then
-                value:restart()
+                value:stop():play()
                 break
             end
             value:setPlaying(saved.active and not override)
