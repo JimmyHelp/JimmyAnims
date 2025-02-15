@@ -1,4 +1,4 @@
--- V1.12 for 0.1.0 and above
+-- V1.13 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -503,16 +503,16 @@ local function getInfo()
         ob.trident.active = spin
         ob.sleeping.active = sleeping
 
-        ob.climbcrouchwalking.active = ladder and crouching and (moving or yvel ~= 0)
+        ob.climbcrouchwalking.active = ladder and crouching and not inWater and (moving or yvel ~= 0)
         ob.climbcrouch.active = ladder and crouching and hover and not moving or (ob.climbcrouchwalking.active and next(ob.climbcrouchwalking.list)==nil)
-        ob.climbdown.active = ladder and goingDown
+        ob.climbdown.active = ladder and goingDown and not crouching
         ob.climbstill.active = ladder and not crouching and hover
         ob.climbing.active = ladder and goingUp and not crouching or (ob.climbdown.active and next(ob.climbdown.list)==nil) or (ob.climbstill.active and next(ob.climbstill.list)==nil)
 
         ob.crouchjumpdown.active = crouching and jumpingDown and not inWater and not ladder
         ob.crouchjumpup.active = crouching and jumpingUp and not inWater and not ladder or (not oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
         ob.crouchwalkback.active = backward and crouching and not inWater and not ladder or (ob.watercrouchwalkback.active and next(ob.watercrouchwalkback.list)==nil and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
-        ob.crouchwalk.active = forward and crouching and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
+        ob.crouchwalk.active = forward and crouching and not (jumpingDown or jumpingUp) and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
         ob.crouching.active = crouching and not walking and not inWater and not isJumping and not ladder and not cooldown or (ob.crouchwalk.active and next(ob.crouchwalk.list)==nil) or (ob.climbcrouch.active and next(ob.climbcrouch.list)==nil) or ((ob.watercrouch.active and not ob.watercrouchwalk.active) and next(ob.watercrouch.list)==nil)
         
         ob.falling.active = falling and not gliding and not creativeFlying and not sitting
