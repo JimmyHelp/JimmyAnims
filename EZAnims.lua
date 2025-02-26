@@ -1,4 +1,4 @@
--- V1.13 for 0.1.0 and above
+-- V1.14 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -497,7 +497,7 @@ local function getInfo()
         ob.sitjumpdown.active = sitting and not passenger and standing and (jumpingDown or falling)
         ob.sitjumpup.active = sitting and not passenger and jumpingUp and standing or (ob.sitjumpdown.active and next(ob.sitjumpdown.list)==nil)
         ob.sitmoveback.active = sitting and not passenger and not isJumping and backwards and standing
-        ob.sitmove.active = velocity:length() > 0 and not passenger and not backwards and standing and sitting and not isJumping or (ob.sitmoveback.active and not next(ob.sitmoveback.list)==nil) or (ob.sitjumpup.active and next(ob.sitjumpup.list)==nil)
+        ob.sitmove.active = velocity:length() > 0 and not passenger and not backwards and standing and sitting and not isJumping or (ob.sitmoveback.active and next(ob.sitmoveback.list)==nil) or (ob.sitjumpup.active and next(ob.sitjumpup.list)==nil)
         ob.sitting.active = sitting and not passenger and velocity:length() == 0 and not isJumping and standing or (ob.sitmove.active and next(ob.sitmove.list)==nil) or (ob.sitpass.active and next(ob.sitpass.list)==nil) or false
 
         ob.trident.active = spin
