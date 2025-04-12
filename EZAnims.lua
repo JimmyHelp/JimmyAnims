@@ -1,4 +1,4 @@
--- V1.14 for 0.1.0 and above
+-- V-outro-dev for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -134,16 +134,28 @@ function controller:setBlendTimes(ex,inc)
     return self
 end
 
+local function getSeg(name)
+    local words = {}
+    for word in name:gmatch("[^_]+") do
+        words[#words+1] = word
+    end
+    return words
+end
+
 local flyinit
 local function addAnims(bb,o)
     local listy = o.aList
     for _,anim in pairs(bb) do
         for name,animation in pairs(anim) do
-            if name:find("fly") then flyinit = true end
+            local words = getSeg(name)
+            if not flyinit then
+                if words[1]:find("fly") then
+                    flyinit = true
+                end
+            end
             for key, _ in pairs(o.aList) do
-                if name:find(key.."$") then
+                if words[1] == key then
                     listy[key].list[#listy[key].list+1] = animation
-                    break
                 end
             end
         end
@@ -286,37 +298,48 @@ function controller:getAnimationStates(spec)
     if type(spec) ~= "string" and spec ~= nil then
         error("The animation state is a non-string value ("..type(spec).."), must be a string or nil.",2)
     end
-    local states = {}
-    for k,v in pairs(self.aList) do
-        states[k] = v.active
+    if spec then return self.aList[spec].active else
+        local states = {}
+        for k,v in pairs(self.aList) do
+            states[k] = v.active
+        end
+        return states 
     end
-    if spec then return self.aList[spec].active else return states end
 end
 
 local function setAnimation(anim,override,state,o)
     local saved = o.aList[anim]
     local exists = true
+    local words = {}
     for _,value in pairs(saved.list) do
-        if value:getName() == state..anim then
-            if not saved.active and saved.stop then break end
-            value:setPlaying(saved.active and not override)
-            if saved.active and saved.stop and not override then
-                value:stop():play()
-            end
+        if getSeg(value:getName())[2] == state then
             exists = false
-        else
-            if not saved.active and saved.stop then break end
-            value:stop()
         end
     end
-    for _,value in pairs(saved.list) do
-        if exists and value:getName() == anim then
-            if not saved.active and saved.stop then break end
-            if saved.active and saved.stop and not override then
-                value:stop():play()
-                break
+    for _, value in pairs(saved.list) do
+        words = getSeg(value:getName())
+        if not words[2] then words[2] = not exists and "" or state end
+        if words[2] == "outro" then words[3] = "outro" words[2] = "" end
+        if words[1] == anim then
+            if words[3] == "outro" then
+                if words[2] == state then -- outro anims
+                    value:setPlaying(not saved.active and not override)
+                else
+                    value:stop()
+                end
+            else
+                if words[2] == state then -- not outro anims
+                    if not saved.active and saved.stop then break end
+                    if saved.active and saved.stop and not override then
+                        value:restart()
+                    end
+                    value:setPlaying(saved.active and not override)
+                else
+                    value:stop()
+                end
             end
-            value:setPlaying(saved.active and not override)
+        else
+            value:stop()
         end
     end
 end
@@ -502,7 +525,6 @@ local function getInfo()
 
         ob.trident.active = spin
         ob.sleeping.active = sleeping
-
         ob.climbcrouchwalking.active = ladder and crouching and not inWater and (moving or yvel ~= 0)
         ob.climbcrouch.active = ladder and crouching and hover and not moving or (ob.climbcrouchwalking.active and next(ob.climbcrouchwalking.list)==nil)
         ob.climbdown.active = ladder and goingDown and not crouching
@@ -526,7 +548,7 @@ local function getInfo()
         ob.walkingback.active = backward and standing and not creativeFlying and not ladder and not inWater or (ob.flywalkback.active and next(ob.flywalkback.list)==nil and next(ob.flywalk.list)==nil and next(ob.flying.list)==nil)
         ob.walking.active = forward and standing and not creativeFlying and not ladder and not cooldown and not inWater or (ob.walkingback.active and next(ob.walkingback.list)==nil) or (ob.sprinting.active and next(ob.sprinting.list)==nil) or (ob.climbing.active and next(ob.climbing.list)==nil)
         or (ob.swimming.active and next(ob.swimming.list)==nil) or (ob.elytra.active and next(ob.elytra.list)==nil) or (ob.jumpingup.active and next(ob.jumpingup.list)==nil) or (ob.waterwalk.active and (next(ob.waterwalk.list)==nil and next(ob.water.list)==nil)) or ((ob.flywalk.active and not ob.flywalkback.active) and next(ob.flywalk.list)==nil and next(ob.flying.list)==nil)
-        or (ob.crouchwalk.active and (next(ob.crouchwalk)==nil or next(ob.crouching.list)==nil))
+        or (ob.crouchwalk.active and (next(ob.crouchwalk)==nil and next(ob.crouching.list)==nil))
         ob.idling.active = not moving and not sprinting and standing and not isJumping and not sitting and not inWater and not creativeFlying and not ladder or (ob.sleeping.active and next(ob.sleeping.list)==nil) or (ob.sitting.active and next(ob.sitting.list)==nil)
         or ((ob.water.active and not ob.waterwalk.active) and next(ob.water.list)==nil) or ((ob.flying.active and not ob.flywalk.active) and next(ob.flying.list)==nil) or ((ob.crouching.active and not ob.crouchwalk.active) and next(ob.crouching.list)==nil)
 
