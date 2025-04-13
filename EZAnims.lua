@@ -1,4 +1,4 @@
--- V1.14 for 0.1.0 and above
+-- V1.15 for 0.1.0 and above
 -- Made by JimmyHelp
 -- Contains Manuel's runLater
 
@@ -286,11 +286,15 @@ function controller:getAnimationStates(spec)
     if type(spec) ~= "string" and spec ~= nil then
         error("The animation state is a non-string value ("..type(spec).."), must be a string or nil.",2)
     end
-    local states = {}
-    for k,v in pairs(self.aList) do
-        states[k] = v.active
+    if spec then 
+        return self.aList[spec].active 
+    else 
+        local states = {}
+        for k,v in pairs(self.aList) do
+            states[k] = v.active
+        end
+        return states
     end
-    if spec then return self.aList[spec].active else return states end
 end
 
 local function setAnimation(anim,override,state,o)
@@ -526,7 +530,7 @@ local function getInfo()
         ob.walkingback.active = backward and standing and not creativeFlying and not ladder and not inWater or (ob.flywalkback.active and next(ob.flywalkback.list)==nil and next(ob.flywalk.list)==nil and next(ob.flying.list)==nil)
         ob.walking.active = forward and standing and not creativeFlying and not ladder and not cooldown and not inWater or (ob.walkingback.active and next(ob.walkingback.list)==nil) or (ob.sprinting.active and next(ob.sprinting.list)==nil) or (ob.climbing.active and next(ob.climbing.list)==nil)
         or (ob.swimming.active and next(ob.swimming.list)==nil) or (ob.elytra.active and next(ob.elytra.list)==nil) or (ob.jumpingup.active and next(ob.jumpingup.list)==nil) or (ob.waterwalk.active and (next(ob.waterwalk.list)==nil and next(ob.water.list)==nil)) or ((ob.flywalk.active and not ob.flywalkback.active) and next(ob.flywalk.list)==nil and next(ob.flying.list)==nil)
-        or (ob.crouchwalk.active and (next(ob.crouchwalk)==nil or next(ob.crouching.list)==nil))
+        or (ob.crouchwalk.active and (next(ob.crouchwalk)==nil and next(ob.crouching.list)==nil))
         ob.idling.active = not moving and not sprinting and standing and not isJumping and not sitting and not inWater and not creativeFlying and not ladder or (ob.sleeping.active and next(ob.sleeping.list)==nil) or (ob.sitting.active and next(ob.sitting.list)==nil)
         or ((ob.water.active and not ob.waterwalk.active) and next(ob.water.list)==nil) or ((ob.flying.active and not ob.flywalk.active) and next(ob.flying.list)==nil) or ((ob.crouching.active and not ob.crouchwalk.active) and next(ob.crouching.list)==nil)
 
