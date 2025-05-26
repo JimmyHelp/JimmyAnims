@@ -1,4 +1,4 @@
--- V2 for 0.1.0 and above
+-- V2.1 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -533,10 +533,10 @@ local function getInfo()
         ob.sprint.active = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown and not inWater or (not oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or false
         ob.walkback.active = backward and standing and not creativeFlying and not ladder and not inWater or (ob.flywalkback.active and next(ob.flywalkback.list)==nil and next(ob.flywalk.list)==nil and next(ob.fly.list)==nil)
         ob.walk.active = forward and standing and not creativeFlying and not ladder and not cooldown and not inWater or (ob.walkback.active and next(ob.walkback.list)==nil) or (ob.sprint.active and next(ob.sprint.list)==nil) or (ob.climb.active and next(ob.climb.list)==nil)
-        or (ob.swim.active and next(ob.swim.list)==nil) or (ob.elytra.active and next(ob.elytra.list)==nil) or (ob.jumpup.active and next(ob.jumpup.list)==nil) or (ob.waterwalk.active and (next(ob.waterwalk.list)==nil and next(ob.water.list)==nil)) or ((ob.flywalk.active and not ob.flywalkback.active) and next(ob.flywalk.list)==nil and next(ob.fly.list)==nil)
+        or (ob.swim.active and next(ob.swim.list)==nil) or (ob.elytra.active and next(ob.elytra.list)==nil) or (ob.waterwalk.active and (next(ob.waterwalk.list)==nil and next(ob.water.list)==nil)) or ((ob.flywalk.active and not ob.flywalkback.active) and next(ob.flywalk.list)==nil and next(ob.fly.list)==nil)
         or (ob.crouchwalk.active and (next(ob.crouchwalk)==nil and next(ob.crouch.list)==nil)) or (not oneJump and ob.walkjumpup.active and next(ob.walkjumpup.list)==nil)
         ob.idle.active = not moving and not sprinting and standing and not isJumping and not sitting and not inWater and not creativeFlying and not ladder or (ob.sleep.active and next(ob.sleep.list)==nil) or (ob.sit.active and next(ob.sit.list)==nil)
-        or ((ob.water.active and not ob.waterwalk.active) and next(ob.water.list)==nil) or ((ob.fly.active and not ob.flywalk.active) and next(ob.fly.list)==nil) or ((ob.crouch.active and not ob.crouchwalk.active) and next(ob.crouch.list)==nil)
+        or ((ob.water.active and not ob.waterwalk.active) and next(ob.water.list)==nil) or ((ob.fly.active and not ob.flywalk.active) and next(ob.fly.list)==nil) or ((ob.crouch.active and not ob.crouchwalk.active) and next(ob.crouch.list)==nil) or (ob.jumpup.active and next(ob.jumpup.list)==nil)
 
         ob.death.active = hp <= 0
         ob.hurt.active = player:getNbt().HurtTime > 0 and hp > 0
