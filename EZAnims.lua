@@ -321,6 +321,16 @@ local function setAnimation(anim,override,state,o)
     end
 end
 
+if events.damage then -- 0.1.5 check
+    function events.damage()
+        for _,o in pairs(objects) do
+            local hurting = o.aList.hurt
+            hurting.active = true
+            setAnimation("hurt",getOverriders(hurting.type,o),getStates(hurting.type,o),o)
+        end
+    end
+end
+
 local flying
 function pings.EZAnims_cFly(x)
     flying = x
@@ -330,7 +340,7 @@ local diff = false
 local rightResult, leftResult, targetEntity, rightMine, leftMine, rightAttack, leftAttack, oldhitBlock, targetBlock, blockSuccess, blockResult, hitBlock
 local yvel, grounded, oldgrounded, hasJumped, cFlying, oldcFlying
 local cooldown = false
-local updateTimer  = 0
+local updateTimer, oldhp = 0,0
 local toggleDiff
 local timer = 10
 local function getInfo()
@@ -539,7 +549,7 @@ local function getInfo()
         or ((ob.water.active and not ob.waterwalk.active) and next(ob.water.list)==nil) or ((ob.fly.active and not ob.flywalk.active) and next(ob.fly.list)==nil) or ((ob.crouch.active and not ob.crouchwalk.active) and next(ob.crouch.list)==nil) or (ob.jumpup.active and next(ob.jumpup.list)==nil)
 
         ob.death.active = hp <= 0
-        ob.hurt.active = player:getNbt().HurtTime > 0 and hp > 0
+        ob.hurt.active = oldhp ~= hp and hp < oldhp
 
         ob.attackR.active = arm == rightActive and rightAttack
         ob.attackL.active = arm == leftActive and leftAttack
@@ -586,6 +596,7 @@ local function getInfo()
             o.oldToggle[key] = o.toggleState[key]
         end
     end
+    oldhp = hp
     oldhitBlock = hitBlock
     targetBlock = player:getTargetedBlock(true, game and 5 or 4.5)
     blockSuccess, blockResult = pcall(targetBlock.getTextures, targetBlock)
