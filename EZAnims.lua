@@ -1,4 +1,4 @@
--- V2.1 for 0.1.0 and above
+-- V2.2 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -717,3 +717,4 @@ end
 
 anims.controller = controller
 return anims
+
