@@ -1,4 +1,4 @@
--- V2.2 for 0.1.0 and above
+-- V2.3 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -17,6 +17,7 @@ local exList = {
     "walkjumpup",
     "walkjumpdown",
     "fall",
+    "crouchfall",
     "sprint",
     "sprintjumpup",
     "sprintjumpdown",
@@ -331,9 +332,13 @@ if events.damage then -- 0.1.5 check
     end
 end
 
-local flying
+local flying = false
 function pings.EZAnims_cFly(x)
     flying = x
+end
+
+function anims:isFlying()
+    return flying
 end
 
 local diff = false
@@ -531,7 +536,8 @@ local function getInfo()
         ob.crouchwalk.active = forward and crouching and not (jumpingDown or jumpingUp) and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
         ob.crouch.active = crouching and not walking and not inWater and not isJumping and not ladder and not cooldown or (ob.crouchwalk.active and next(ob.crouchwalk.list)==nil) or (ob.climbcrouch.active and next(ob.climbcrouch.list)==nil) or ((ob.watercrouch.active and not ob.watercrouchwalk.active) and next(ob.watercrouch.list)==nil)
         
-        ob.fall.active = falling and not gliding and not creativeFlying and not sitting
+        ob.fall.active = falling and not gliding and not creativeFlying and not sitting and not crouching or (ob.crouchfall.active and next(ob.crouchfall.list)==nil)
+        ob.crouchfall.active = falling and not gliding and not creativeFlying and not sitting and crouching
         
         ob.sprintjumpdown.active = jumpingDown and sprinting and not creativeFlying and not ladder or false
         ob.sprintjumpup.active = jumpingUp and sprinting and not creativeFlying and not ladder or (not oneJump and (ob.sprintjumpdown.active and next(ob.sprintjumpdown.list)==nil)) or false
@@ -717,4 +723,3 @@ end
 
 anims.controller = controller
 return anims
-
