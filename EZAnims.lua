@@ -1,4 +1,4 @@
--- V2.3 for 0.1.0 and above
+-- V2.4 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -372,12 +372,12 @@ local function getInfo()
     local sitting = vehicle ~= nil or pose == "SITTING" -- if you're reading this code and see this, "SITTING" isn't a vanilla pose, this is for mods
     local passenger = vehicle and vehicle:getControllingPassenger() ~= player
     local creativeFlying = (flying or false) and not sitting
-    local standing = pose == "STANDING"
-    local crouching = pose == "CROUCHING" and not creativeFlying
-    local gliding = pose == "FALL_FLYING"
-    local spin = pose == "SPIN_ATTACK"
-    local sleeping = pose == "SLEEPING"
-    local swimming = pose == "SWIMMING"
+    local crouching = player:isCrouching() and not creativeFlying
+    local gliding = player:isGliding()
+    local spin = player:riptideSpinning()
+    local swimming = player:isVisuallySwimming()
+    local sleeping = pose == "SLEEPING" and not (crouching or gliding or spin or swimming)
+    local standing = not (crouching or gliding or spin or sleeping or swimming)
     local inWater = player:isUnderwater() and not sitting
     local inLiquid = player:isInWater() or player:isInLava()
     local liquidSwim = swimming and inLiquid
@@ -532,8 +532,8 @@ local function getInfo()
 
         ob.crouchjumpdown.active = crouching and jumpingDown and not inWater and not ladder
         ob.crouchjumpup.active = crouching and jumpingUp and not inWater and not ladder or (not oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
-        ob.crouchwalkback.active = backward and crouching and not inWater and not ladder or (ob.watercrouchwalkback.active and next(ob.watercrouchwalkback.list)==nil and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
-        ob.crouchwalk.active = forward and crouching and not (jumpingDown or jumpingUp) and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
+        ob.crouchwalkback.active = backward and crouching and not gliding and not inWater and not ladder or (ob.watercrouchwalkback.active and next(ob.watercrouchwalkback.list)==nil and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
+        ob.crouchwalk.active = forward and crouching and not gliding and not (jumpingDown or jumpingUp) and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
         ob.crouch.active = crouching and not walking and not inWater and not isJumping and not ladder and not cooldown or (ob.crouchwalk.active and next(ob.crouchwalk.list)==nil) or (ob.climbcrouch.active and next(ob.climbcrouch.list)==nil) or ((ob.watercrouch.active and not ob.watercrouchwalk.active) and next(ob.watercrouch.list)==nil)
         
         ob.fall.active = falling and not gliding and not creativeFlying and not sitting and not crouching or (ob.crouchfall.active and next(ob.crouchfall.list)==nil)
@@ -545,6 +545,35 @@ local function getInfo()
         ob.walkjumpup.active = jumpingUp and moving and not ladder and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (not oneJump and (ob.walkjumpdown.active and next(ob.walkjumpdown.list)==nil)) or false
         ob.jumpdown.active = jumpingDown and not moving and not ladder and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (ob.fall.active and next(ob.fall.list)==nil) or (oneJump and (ob.sprintjumpdown.active and next(ob.sprintjumpdown.list)==nil)) or (oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil)) or (oneJump and (ob.walkjumpdown.active and next(ob.walkjumpdown.list)==nil))
         ob.jumpup.active = jumpingUp and not moving and not ladder and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (ob.jumpdown.active and next(ob.jumpdown.list)==nil) or (ob.trident.active and next(ob.trident.list)==nil) or (oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or (oneJump and (ob.walkjumpup.active and next(ob.walkjumpup.list)==nil))
+
+        if grounded ~= oldgrounded and not grounded then
+            if (ob.jumpup.active and next(ob.jumpdown.list)==nil) then
+                ob.jumpup.active = false
+                setAnimation("jumpup",getOverriders(ob.jumpup.type,o),getStates(ob.jumpup.type,o),o)
+                ob.jumpup.active = true
+                setAnimation("jumpup",getOverriders(ob.jumpup.type,o),getStates(ob.jumpup.type,o),o)
+            elseif (ob.walkjumpup.active and next(ob.walkjumpdown.list)==nil) then
+                ob.walkjumpup.active = false
+                setAnimation("walkjumpup",getOverriders(ob.walkjumpup.type,o),getStates(ob.walkjumpup.type,o),o)
+                ob.walkjumpup.active = true
+                setAnimation("walkjumpup",getOverriders(ob.walkjumpup.type,o),getStates(ob.walkjumpup.type,o),o)
+            elseif (ob.sprintjumpup.active and next(ob.sprintjumpdown.list)==nil) then
+                ob.sprintjumpup.active = false
+                setAnimation("sprintjumpup",getOverriders(ob.sprintjumpup.type,o),getStates(ob.sprintjumpup.type,o),o)
+                ob.sprintjumpup.active = true
+                setAnimation("sprintjumpup",getOverriders(ob.sprintjumpup.type,o),getStates(ob.sprintjumpup.type,o),o)
+            elseif (ob.crouchjumpup.active and next(ob.crouchjumpdown.list)==nil) then
+                ob.crouchjumpup.active = false
+                setAnimation("crouchjumpup",getOverriders(ob.crouchjumpup.type,o),getStates(ob.crouchjumpup.type,o),o)
+                ob.crouchjumpup.active = true
+                setAnimation("crouchjumpup",getOverriders(ob.crouchjumpup.type,o),getStates(ob.crouchjumpup.type,o),o)
+            elseif (ob.sitjumpup.active and next(ob.sitjumpdown.list)==nil) then
+                ob.sitjumpup.active = false
+                setAnimation("sitjumpup",getOverriders(ob.sitjumpup.type,o),getStates(ob.sitjumpup.type,o),o)
+                ob.sitjumpup.active = true
+                setAnimation("sitjumpup",getOverriders(ob.sitjumpup.type,o),getStates(ob.sitjumpup.type,o),o)
+            end
+        end
 
         ob.sprint.active = sprinting and not isJumping and not creativeFlying and not ladder and not cooldown and not inWater or (not oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or false
         ob.walkback.active = backward and standing and not creativeFlying and not ladder and not inWater or (ob.flywalkback.active and next(ob.flywalkback.list)==nil and next(ob.flywalk.list)==nil and next(ob.fly.list)==nil)
