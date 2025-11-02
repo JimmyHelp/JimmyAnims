@@ -196,8 +196,9 @@ function anims:disableAutoSearch()
 end
 
 ---@param anim string
-function controller:toggleRestart(anim)
-    self.aList[anim].restart = not self.aList[anim].restart
+---@param toggle boolean
+function controller:setRestart(anim,toggle)
+    self.aList[anim].restart = not toggle
     return self
 end
 
