@@ -1,4 +1,4 @@
--- V2.4 for 0.1.0 and above
+-- V2.5 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -102,9 +102,10 @@ for _, key in ipairs(listFiles(nil,true)) do
 end
 if GSAnimBlend then GSAnimBlend.safe = false end
 
-local function setBlendTime(ex,inc,o)
+local function setBlends(ex,inc,o,init)
     for _,list in pairs(o.aList) do
         for _,value in pairs(list.list) do
+            if value:getBlendTime() ~= 0 and init then log(value:getName(),value:getBlendTime()) break end
             value:setBlendTime(list.type == "excluAnims" and ex or inc)
         end
     end
@@ -126,7 +127,7 @@ function controller:setBlendTimes(ex,inc)
     if inc == nil then
         inc = ex
     end
-    setBlendTime(ex,inc,self)
+    setBlends(ex,inc,self)
     return self
 end
 
@@ -157,7 +158,7 @@ local function addAnims(bb,o)
         end
     end
 
-    if GSAnimBlend then setBlendTime(4,4,o) end
+    if GSAnimBlend then setBlends(4,4,o,true) end
 end
 
 ---@param anim table
@@ -167,7 +168,7 @@ function controller:setAnims(anim,ifFly)
     for key, value in pairs(anim) do
         self.aList[key].list = value
     end
-    if GSAnimBlend then setBlendTime(4,4,self) end
+    if GSAnimBlend then setBlends(4,4,self,true) end
     return self
 end
 
@@ -191,6 +192,12 @@ end
 local auto = true
 function anims:disableAutoSearch()
     auto = false
+    return self
+end
+
+---@param anim string
+function controller:toggleRestart(anim)
+    self.aList[anim].restart = not self.aList[anim].restart
     return self
 end
 
@@ -309,7 +316,7 @@ local function setAnimation(anim,override,state,o)
                 if words[2] == state then -- not outro anims
                     if not saved.active and saved.stop then break end
                     if saved.active and saved.stop and not override then
-                        value:restart()
+                        if not saved.restart then value:restart() else value:play() end
                     end
                     value:setPlaying(saved.active and not override)
                 else
