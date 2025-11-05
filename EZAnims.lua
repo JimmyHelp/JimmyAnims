@@ -1,4 +1,4 @@
--- V2.5 for 0.1.0 and above
+-- V2.6 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -105,7 +105,7 @@ if GSAnimBlend then GSAnimBlend.safe = false end
 local function setBlends(ex,inc,o,init)
     for _,list in pairs(o.aList) do
         for _,value in pairs(list.list) do
-            if value:getBlendTime() ~= 0 and init then log(value:getName(),value:getBlendTime()) break end
+            if GSAnimBlend.animData[value]["EZAnims$hasBlendTime"] and init then break end
             value:setBlendTime(list.type == "excluAnims" and ex or inc)
         end
     end
@@ -383,7 +383,7 @@ local function getInfo()
     local crouching = player:isCrouching() and not creativeFlying
     local gliding = player:isGliding()
     local spin = player:riptideSpinning()
-    local swimming = player:isVisuallySwimming()
+    local swimming = player:isVisuallySwimming() or pose == "CRAWLING"
     local sleeping = pose == "SLEEPING" and not (crouching or gliding or spin or swimming)
     local standing = not (crouching or gliding or spin or sleeping or swimming)
     local inWater = player:isUnderwater() and not sitting
