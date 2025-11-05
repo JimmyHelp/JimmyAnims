@@ -1,4 +1,4 @@
--- V2.6 for 0.1.0 and above
+-- V2.7 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -105,8 +105,9 @@ if GSAnimBlend then GSAnimBlend.safe = false end
 local function setBlends(ex,inc,o,init)
     for _,list in pairs(o.aList) do
         for _,value in pairs(list.list) do
-            if GSAnimBlend.animData[value]["EZAnims$hasBlendTime"] and init then break end
+            if GSAnimBlend.animData[value]["EZAnims$hasBlendTime"] and init then goto CONTINUE end
             value:setBlendTime(list.type == "excluAnims" and ex or inc)
+           ::CONTINUE::
         end
     end
 end
