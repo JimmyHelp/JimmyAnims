@@ -1,4 +1,4 @@
--- V2.8 for 0.1.0 and above
+-- V3.0.0 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -152,7 +152,7 @@ local function addAnims(bb,o)
                 end
             end
             for key, _ in pairs(o.aList) do
-                if words[1] == key then
+                if words[1]:match("^"..key.."[0-9]*$") then
                     listy[key].list[#listy[key].list+1] = animation
                 end
             end
@@ -307,7 +307,7 @@ local function setAnimation(anim,override,state,o)
         words = getSeg(value:getName())
         if not words[2] then words[2] = not exists and "" or state end
         if words[2] == "outro" then words[3] = "outro" words[2] = "" end
-        if words[1] == anim then
+        if words[1]:match("^"..anim.."[0-9]*$") then
             if words[3] == "outro" then
                 if words[2] == state then -- outro anims
                     value:setPlaying(not saved.active and not override)
@@ -348,6 +348,11 @@ end
 
 function anims:isFlying()
     return flying
+end
+
+local jumpTracker = false
+function anims:isJumping()
+    return jumpTracker
 end
 
 local diff = false
@@ -442,6 +447,8 @@ local function getInfo()
     local walking = moving and not sprinting and not isJumping and not sitting
     local forward = walking and not backwards
     local backward = walking and backwards
+
+    jumpTracker = isJumping and not creativeFlying and not falling and not ladder and not sitting -- only used for isJumping
 
     local handedness = player:isLeftHanded()
     local rightItem = player:getHeldItem(handedness)
@@ -761,4 +768,3 @@ end
 
 anims.controller = controller
 return anims
-
