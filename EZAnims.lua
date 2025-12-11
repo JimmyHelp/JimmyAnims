@@ -649,9 +649,11 @@ local function getInfo()
     end
     oldhp = hp
     oldhitBlock = hitBlock
-    targetBlock = player:getTargetedBlock(true, game and 5 or 4.5)
-    blockSuccess, blockResult = pcall(targetBlock.getTextures, targetBlock)
-    if blockSuccess then hitBlock = not (next(blockResult) == nil) else hitBlock = true end
+	blockSuccess, blockResult = pcall(function()
+		targetBlock = player:getTargetedBlock(true, game and 5 or 4.5)
+		return targetBlock:getTextures(targetBlock)
+	end)
+	if blockSuccess then hitBlock = not (next(blockResult) == nil) else hitBlock = true end
 end
 
 function events.tick()
