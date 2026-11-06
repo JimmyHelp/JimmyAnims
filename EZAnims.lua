@@ -1,4 +1,4 @@
--- V3.0.1 for 0.1.0 and above
+-- V3.1.0 for 0.1.0 and above
 -- Made by JimmyHelp
 
 local anims = {}
@@ -354,6 +354,15 @@ function anims:isJumping()
     return jumpTracker
 end
 
+local liquids = {
+    ["minecraft:water"] = true,
+    ["minecraft:lava"] = true
+}
+
+function anims:addLiquid(blockid)
+    liquids[blockid] = true
+end
+
 local diff = false
 local rightResult, leftResult, targetEntity, rightMine, leftMine, rightAttack, leftAttack, oldhitBlock, targetBlock, blockSuccess, blockResult, hitBlock
 local yvel, grounded, oldgrounded, hasJumped, cFlying, oldcFlying
@@ -385,7 +394,7 @@ local function getInfo()
     local sitting = vehicle ~= nil or pose == "SITTING" -- if you're reading this code and see this, "SITTING" isn't a vanilla pose, this is for mods
     local passenger = vehicle and vehicle:getControllingPassenger() ~= player
     local creativeFlying = (flying or false) and not sitting
-    local crouching = player:isCrouching() and not creativeFlying
+    local crouching = (player:getPose()=="CROUCHING" or player:isCrouching()) and not creativeFlying
     local gliding = player:isGliding()
     local spin = player:riptideSpinning()
     local swimming = player:isVisuallySwimming() or pose == "CRAWLING"
@@ -546,7 +555,7 @@ local function getInfo()
         ob.climb.active = ladder and goingUp and not crouching or (ob.climbdown.active and next(ob.climbdown.list)==nil) or (ob.climbstill.active and next(ob.climbstill.list)==nil)
 
         ob.crouchjumpdown.active = crouching and jumpingDown and not inWater and not ladder
-        ob.crouchjumpup.active = crouching and jumpingUp and not inWater and not ladder or (not oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil))
+        ob.crouchjumpup.active = crouching and jumpingUp and not inWater and not ladder or (not oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil)) or false
         ob.crouchwalkback.active = backward and crouching and not gliding and not inWater and not ladder or (ob.watercrouchwalkback.active and next(ob.watercrouchwalkback.list)==nil and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
         ob.crouchwalk.active = forward and crouching and not gliding and not (jumpingDown or jumpingUp) and not inWater and not ladder or (ob.crouchwalkback.active and next(ob.crouchwalkback.list)==nil) or (not oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil)) or ((ob.watercrouchwalk.active and not ob.watercrouchwalkback.active) and next(ob.watercrouchwalk.list)==nil and next(ob.watercrouch.list)==nil)
         ob.crouch.active = crouching and not walking and not inWater and not isJumping and not ladder and not cooldown or (ob.crouchwalk.active and next(ob.crouchwalk.list)==nil) or (ob.climbcrouch.active and next(ob.climbcrouch.list)==nil) or ((ob.watercrouch.active and not ob.watercrouchwalk.active) and next(ob.watercrouch.list)==nil)
@@ -559,7 +568,7 @@ local function getInfo()
         ob.walkjumpdown.active = jumpingDown and moving and not ladder and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater
         ob.walkjumpup.active = jumpingUp and moving and not ladder and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (not oneJump and (ob.walkjumpdown.active and next(ob.walkjumpdown.list)==nil)) or false
         ob.jumpdown.active = jumpingDown and not moving and not ladder and not sprinting and not crouching and not sitting and not sleeping and not gliding and not creativeFlying and not spin and not inWater or (ob.fall.active and next(ob.fall.list)==nil) or (oneJump and (ob.sprintjumpdown.active and next(ob.sprintjumpdown.list)==nil)) or (oneJump and (ob.crouchjumpdown.active and next(ob.crouchjumpdown.list)==nil)) or (oneJump and (ob.walkjumpdown.active and next(ob.walkjumpdown.list)==nil))
-        ob.jumpup.active = jumpingUp and not moving and not ladder and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (ob.jumpdown.active and next(ob.jumpdown.list)==nil) or (ob.trident.active and next(ob.trident.list)==nil) or (oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or (oneJump and (ob.walkjumpup.active and next(ob.walkjumpup.list)==nil))
+        ob.jumpup.active = jumpingUp and not moving and not ladder and not sprinting and not crouching and not sitting and not creativeFlying and not inWater or (ob.jumpdown.active and next(ob.jumpdown.list)==nil) or (ob.trident.active and next(ob.trident.list)==nil) or (oneJump and (ob.sprintjumpup.active and next(ob.sprintjumpup.list)==nil)) or (oneJump and (ob.walkjumpup.active and next(ob.walkjumpup.list)==nil)) or (oneJump and (ob.crouchjumpup.active and next(ob.crouchjumpup.list)==nil))
 
         if grounded ~= oldgrounded and not grounded then
             if (ob.jumpup.active and next(ob.jumpdown.list)==nil) then
@@ -652,11 +661,8 @@ local function getInfo()
     end
     oldhp = hp
     oldhitBlock = hitBlock
-    blockSuccess, blockResult = pcall(function()
-	targetBlock = player:getTargetedBlock(true, game and 5 or 4.5)
-		return targetBlock:getTextures(targetBlock)
-	end)
-	if blockSuccess then hitBlock = not (next(blockResult) == nil) else hitBlock = true end
+    local target = player:getTargetedBlock(true,game and 5 or 4.5)
+    hitBlock = not (target and (target:isAir() or liquids[target.id])) -- block nil check for crazy mod incompat
 end
 
 function events.tick()
@@ -722,7 +728,6 @@ function events.entity_init()
     if #objects == 0 then getBBModels() end
 end
 
-local firstRun = true
 ---@param ... table
 function anims:addBBModel(...)
     local bbmodels = {...}
